@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入element -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="css/element-style.css">
+
+    <!-- Buefy -->
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+
+    <!-- markdown -->
+    <link rel="stylesheet" href="lib/js/editor.md-master/css/editormd.css" />
+
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+<div id="app">
+
+    <div style="height: 40px;background-color: rgb(179, 192, 209);"></div>
+
+
+    <el-container>
+        <!-- 服务器信息输入框 -->
+        <el-header>
+            <el-row :gutter="30">
+                <el-col :span="6"></el-col>
+                <el-col :span="6">
+                    <el-input v-model="serverInput.ipInput" placeholder="请输入ip地址"></el-input>
+                </el-col>
+                <el-col :span="4">
+                    <el-input-number v-model="serverInput.port" :min="1" :max="65535" label="端口号"></el-input-number>
+                </el-col>
+                <el-col :span="6">
+                    <el-input placeholder="请输入root密码" v-model="serverInput.password" show-password></el-input>
+                </el-col>
+                <el-col :span="5">
+                    <el-input v-model="serverInput.hexoUrl" placeholder="hexo文件夹地址"></el-input>
+                </el-col>
+                <el-col :span="3">
+                    <div>
+                        <el-button :disabled="connectBtnDisabled" type="primary" @click="connectBtnListener" :icon="iconBtn">{{connectBtnText}}</el-button>
+                    </div>
+                </el-col>
+            </el-row>
+
+
+        </el-header>
+
+        <!-- 分割线 -->
+        <el-container>
+
+            <el-header>
+                <el-divider content-position="left">服务器详细信息</el-divider>
+            </el-header>
+        </el-container>
+
+        <!-- 第一排服务器信息 -->
+        <el-container>
+            <el-header>
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <div style="text-align: left;margin-left: 40px;">
+                            <span style="text-align: right;">kernel-name</span><span>：</span><span
+                                style="font-weight: bold;">{{serverMessage.kernelName}}</span>
+                        </div>
+                    </el-col>
+
+                    <el-col :span="8">
+                        <div style="text-align: left;">
+                            <span>nodename</span><span>：</span><span
+                                style="font-weight: bold;">{{serverMessage.nodeName}}</span>
+                        </div>
+                    </el-col>
+
+                    <el-col :span="8">
+                        <div style="text-align: left;">
+                            <span>kernel-release</span><span>：</span><span
+                                style="font-weight: bold;">{{serverMessage.kernelRelease}}</span>
+                        </div>
+                    </el-col>
+
+                </el-row>
+            </el-header>
+        </el-container>
+
+        <!-- 第二排服务器信息 -->
+        <el-container>
+            <el-header>
+                <el-row :gutter="20">
+
+
+                    <el-col :span="8">
+                        <div style="text-align: left;margin-left: 40px;">
+                            <span>machine</span><span>：</span><span
+                                style="font-weight: bold;">{{serverMessage.machine}}</span>
+                        </div>
+                    </el-col>
+
+                    <el-col :span="8">
+                        <div style="text-align: left;">
+                            <span>processor</span><span>：</span><span
+                                style="font-weight: bold;">{{serverMessage.processor}}</span>
+                        </div>
+                    </el-col>
+
+                    <el-col :span="8">
+                        <div style="text-align: left;">
+                            <span>operating-system</span><span>：</span><span
+                                style="font-weight: bold;">{{serverMessage.operatingSystem}}</span>
+                        </div>
+                    </el-col>
+
+                </el-row>
+            </el-header>
+        </el-container>
+
+        <!-- 第三排服务器信息 -->
+        <el-container>
+            <el-header>
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <div style="text-align: left;margin-left: 40px;">
+                            <span style="text-align: right;">hardware-platform</span><span>：</span><span
+                                style="font-weight: bold;">{{serverMessage.hardwarePlatform}}</span>
+                        </div>
+                    </el-col>
+
+
+                    <el-col :span="10">
+                        <div style="text-align: left;">
+                            <span style="text-align: right;">kernel-version</span><span>：</span><span
+                                style="font-weight: bold;">{{serverMessage.kernelVersion}}</span>
+                        </div>
+                    </el-col>
+
+                    <el-col :span="6"></el-col>
+
+                </el-row>
+            </el-header>
+        </el-container>
+
+        <!-- 分割线 -->
+        <el-container>
+            <el-header>
+                <el-divider content-position="left">操作</el-divider>
+            </el-header>
+        </el-container>
+
+        <!-- 文件操作 -->
+        <el-container>
+            <el-header>
+                <el-row :gutter="20">
+                    <el-col :span="6">
+                        <div>
+                            <el-input v-model="newFileInput" placeholder="新文件名称"></el-input>
+                        </div>
+                    </el-col>
+
+
+                    <el-col :span="2">
+                        <div>
+                            <el-button type="primary" @click="newFIleBtnListener">新建</el-button>
+                        </div>
+                    </el-col>
+                    <el-col :span="2">
+                        <div>
+                            <el-button type="primary" @click="uploadFileBtnListener">上传博客</el-button>
+                        </div>
+                    </el-col>
+                    <el-col :span="12">
+                        <div style="margin-top: 20px;margin-left: 15%;">
+                            <b-progress :hidden="processBarIsHidden" type="is-danger"></b-progress>
+                        </div>
+                    </el-col>
+
+                </el-row>
+            </el-header>
+        </el-container>
+
+        <!-- 占位 -->
+        <el-container>
+            <el-header>
+                <el-row :gutter="20">
+                </el-row>
+            </el-header>
+        </el-container>
+
+        <!-- 正文和footer -->
+        <el-container>
+            <el-main>
+                <div id="editor" style="z-index: 100;">
+                    <!-- Tips: Editor.md can auto append a `<textarea>` tag -->
+                    <textarea id="mdText" style="display:none;">{{mdValue}}</textarea>
+                </div>
+            </el-main>
+            <el-footer style="height: 40px; line-height: 40px">hexo-client v1.0.1 &nbsp;&nbsp;&nbsp;author: <a target="_blank"
+                                                                                             href="https://lightingsui.github.io">lighting</a></el-footer>
+        </el-container>
+    </el-container>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<!-- 引入element -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- markdown -->
+<script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="lib/js/editor.md-master/editormd.min.js"></script>
+<!-- Buefy -->
+<script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+<!-- axios -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- querystring -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/query-string/6.13.2/index.js"></script>
+
+<script src="index.js"></script>
+
+<script>
+    $(function () {
+
+    });
+</script>
+</body>
+
+</html>
