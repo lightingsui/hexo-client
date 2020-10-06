@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lightingsui.linuxwatcher.mapper.BlogMessageMapper">
+  <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.BlogMessage">
+    <id column="blog_id" jdbcType="INTEGER" property="blogId" />
+    <result column="server_id" jdbcType="INTEGER" property="serverId" />
+    <result column="blog_time" jdbcType="TIMESTAMP" property="blogTime" />
+    <result column="blog_name" jdbcType="VARCHAR" property="blogName" />
+    <result column="blog_category" jdbcType="VARCHAR" property="blogCategory" />
+    <result column="blog_tag" jdbcType="VARCHAR" property="blogTag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    blog_id, server_id, blog_time, blog_name, blog_category, blog_tag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from blog_message
+    where blog_id = #{blogId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from blog_message
+    where blog_id = #{blogId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.BlogMessage">
+    insert into blog_message (blog_id, server_id, blog_time, 
+      blog_name, blog_category, blog_tag
+      )
+    values (#{blogId,jdbcType=INTEGER}, #{serverId,jdbcType=INTEGER}, #{blogTime,jdbcType=TIMESTAMP}, 
+      #{blogName,jdbcType=VARCHAR}, #{blogCategory,jdbcType=VARCHAR}, #{blogTag,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.BlogMessage">
+    insert into blog_message
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="blogId != null">
+        blog_id,
+      </if>
+      <if test="serverId != null">
+        server_id,
+      </if>
+      <if test="blogTime != null">
+        blog_time,
+      </if>
+      <if test="blogName != null">
+        blog_name,
+      </if>
+      <if test="blogCategory != null">
+        blog_category,
+      </if>
+      <if test="blogTag != null">
+        blog_tag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="blogId != null">
+        #{blogId,jdbcType=INTEGER},
+      </if>
+      <if test="serverId != null">
+        #{serverId,jdbcType=INTEGER},
+      </if>
+      <if test="blogTime != null">
+        #{blogTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="blogName != null">
+        #{blogName,jdbcType=VARCHAR},
+      </if>
+      <if test="blogCategory != null">
+        #{blogCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="blogTag != null">
+        #{blogTag,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.BlogMessage">
+    update blog_message
+    <set>
+      <if test="serverId != null">
+        server_id = #{serverId,jdbcType=INTEGER},
+      </if>
+      <if test="blogTime != null">
+        blog_time = #{blogTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="blogName != null">
+        blog_name = #{blogName,jdbcType=VARCHAR},
+      </if>
+      <if test="blogCategory != null">
+        blog_category = #{blogCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="blogTag != null">
+        blog_tag = #{blogTag,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where blog_id = #{blogId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.BlogMessage">
+    update blog_message
+    set server_id = #{serverId,jdbcType=INTEGER},
+      blog_time = #{blogTime,jdbcType=TIMESTAMP},
+      blog_name = #{blogName,jdbcType=VARCHAR},
+      blog_category = #{blogCategory,jdbcType=VARCHAR},
+      blog_tag = #{blogTag,jdbcType=VARCHAR}
+    where blog_id = #{blogId,jdbcType=INTEGER}
+  </update>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from blog_message
+  </select>
+  <sql id="Select_Cond_Sql">
+    <trim prefix="where" suffixOverrides="and">
+      <if test="blogId != null">
+        and blog_id = #{blogId, jdbcType=INTEGER}
+      </if>
+      <if test="serverId != null">
+        and server_id = #{serverId, jdbcType=INTEGER}
+      </if>
+      <if test="blogTime != null">
+        and blog_time = #{blogTime, jdbcType=TIMESTAMP}
+      </if>
+      <if test="blogName != null">
+        and blog_name = #{blogName, jdbcType=VARCHAR}
+      </if>
+      <if test="blogCategory != null">
+        and blog_category = #{blogCategory, jdbcType=VARCHAR}
+      </if>
+      <if test="blogTag != null">
+        and blog_tag = #{blogTag, jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </sql>
+  <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.BlogMessage" resultMap="BaseResultMap">
+    select count(blog_id) from blog_message
+    <include refid="Select_Cond_Sql" />
+  </select>
+  <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.BlogMessage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from blog_message
+    <include refid="Select_Cond_Sql" />
+  </select>
+</mapper>

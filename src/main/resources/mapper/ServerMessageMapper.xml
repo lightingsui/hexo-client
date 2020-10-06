@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lightingsui.linuxwatcher.mapper.ServerMessageMapper">
+    <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.ServerMessage">
+        <id column="server_id" jdbcType="INTEGER" property="serverId"/>
+        <result column="server_ip" jdbcType="VARCHAR" property="serverIp"/>
+        <result column="server_name" jdbcType="VARCHAR" property="serverName"/>
+        <result column="server_create_time" jdbcType="TIMESTAMP" property="serverCreateTime"/>
+        <result column="server_last_time" jdbcType="TIMESTAMP" property="serverLastTime"/>
+        <result column="server_login_location" jdbcType="VARCHAR" property="serverLoginLocation"/>
+        <result column="server_hexo_address" jdbcType="VARCHAR" property="serverHexoAddress"/>
+        <result column="server_operating_system" jdbcType="VARCHAR" property="serverOperatingSystem"/>
+        <result column="server_password" jdbcType="VARCHAR" property="serverPassword"/>
+        <result column="server_port" jdbcType="VARCHAR" property="serverPort"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    server_id, server_ip, server_name, server_create_time, server_last_time, server_login_location, 
+    server_hexo_address, server_operating_system, server_password, server_port
+  </sql>
+
+    <sql id="connect">
+    server_id, server_ip, server_password, server_port
+  </sql>
+
+    <sql id="Select_Cond_Sql">
+        <trim prefix="where" prefixOverrides="and">
+            <if test="serverId != null">
+                and server_id = #{serverId, jdbcType=INTEGER}
+            </if>
+            <if test="serverIp != null">
+                and server_ip = #{serverIp, jdbcType=VARCHAR}
+            </if>
+            <if test="serverName != null">
+                and server_name = #{serverName, jdbcType=VARCHAR}
+            </if>
+            <if test="serverCreateTime != null">
+                and server_create_time = #{serverCreateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="serverLastTime != null">
+                and server_last_time = #{serverLastTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="serverLoginLocation != null">
+                and server_login_location = #{serverLoginLocation, jdbcType=VARCHAR}
+            </if>
+            <if test="serverHexoAddress != null">
+                and server_hexo_address = #{serverHexoAddress, jdbcType=VARCHAR}
+            </if>
+            <if test="serverOperatingSystem != null">
+                and server_operating_system = #{serverOperatingSystem, jdbcType=VARCHAR}
+            </if>
+            <if test="serverPassword != null">
+                and server_password = #{serverPassword, jdbcType=VARCHAR}
+            </if>
+            <if test="serverPort != null">
+                and server_port = #{serverPort, jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from server_message
+        where server_id = #{serverId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from server_message
+    where server_id = #{serverId,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.ServerMessage">
+    insert into server_message (server_id, server_ip, server_name, 
+      server_create_time, server_last_time, server_login_location, 
+      server_hexo_address, server_operating_system
+      )
+    values (#{serverId,jdbcType=INTEGER}, #{serverIp,jdbcType=VARCHAR}, #{serverName,jdbcType=VARCHAR}, 
+      #{serverCreateTime,jdbcType=TIMESTAMP}, #{serverLastTime,jdbcType=TIMESTAMP}, #{serverLoginLocation,jdbcType=VARCHAR}, 
+      #{serverHexoAddress,jdbcType=VARCHAR}, #{serverOperatingSystem,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.ServerMessage">
+        insert into server_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serverId != null">
+                server_id,
+            </if>
+            <if test="serverIp != null">
+                server_ip,
+            </if>
+            <if test="serverName != null">
+                server_name,
+            </if>
+            <if test="serverCreateTime != null">
+                server_create_time,
+            </if>
+            <if test="serverLastTime != null">
+                server_last_time,
+            </if>
+            <if test="serverLoginLocation != null">
+                server_login_location,
+            </if>
+            <if test="serverHexoAddress != null">
+                server_hexo_address,
+            </if>
+            <if test="serverOperatingSystem != null">
+                server_operating_system,
+            </if>
+            <if test="serverPassword != null">
+                server_password,
+            </if>
+            <if test="serverPort != null">
+                server_port,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serverId != null">
+                #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="serverIp != null">
+                #{serverIp,jdbcType=VARCHAR},
+            </if>
+            <if test="serverName != null">
+                #{serverName,jdbcType=VARCHAR},
+            </if>
+            <if test="serverCreateTime != null">
+                #{serverCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="serverLastTime != null">
+                #{serverLastTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="serverLoginLocation != null">
+                #{serverLoginLocation,jdbcType=VARCHAR},
+            </if>
+            <if test="serverHexoAddress != null">
+                #{serverHexoAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="serverOperatingSystem != null">
+                #{serverOperatingSystem,jdbcType=VARCHAR},
+            </if>
+            <if test="serverPassword != null">
+                #{serverPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="serverPort != null">
+                #{serverPort,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.ServerMessage">
+        update server_message
+        <set>
+            <if test="serverIp != null">
+                server_ip = #{serverIp,jdbcType=VARCHAR},
+            </if>
+            <if test="serverName != null">
+                server_name = #{serverName,jdbcType=VARCHAR},
+            </if>
+            <if test="serverCreateTime != null">
+                server_create_time = #{serverCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="serverLastTime != null">
+                server_last_time = #{serverLastTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="serverLoginLocation != null">
+                server_login_location = #{serverLoginLocation,jdbcType=VARCHAR},
+            </if>
+            <if test="serverHexoAddress != null">
+                server_hexo_address = #{serverHexoAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="serverOperatingSystem != null">
+                server_operating_system = #{serverOperatingSystem,jdbcType=VARCHAR},
+            </if>
+            <if test="serverPassword != null">
+                server_password = #{serverPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="serverPort != null">
+                server_port = #{serverPort,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where server_id = #{serverId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.ServerMessage">
+    update server_message
+    set server_ip = #{serverIp,jdbcType=VARCHAR},
+      server_name = #{serverName,jdbcType=VARCHAR},
+      server_create_time = #{serverCreateTime,jdbcType=TIMESTAMP},
+      server_last_time = #{serverLastTime,jdbcType=TIMESTAMP},
+      server_login_location = #{serverLoginLocation,jdbcType=VARCHAR},
+      server_hexo_address = #{serverHexoAddress,jdbcType=VARCHAR},
+      server_operating_system = #{serverOperatingSystem,jdbcType=VARCHAR}
+      server_password = #{serverPassword,jdbcType=VARCHAR}
+      server_port = #{serverPort,jdbcType=VARCHAR}
+    where server_id = #{serverId,jdbcType=INTEGER}
+  </update>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from server_message
+    </select>
+
+    <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.ServerMessage" resultMap="BaseResultMap">
+        select count(server_id) from server_message
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.ServerMessage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from server_message
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectAllOnlyServerId" resultMap="BaseResultMap">
+        select
+        <include refid="connect"/>
+        from server_message
+    </select>
+    <select id="selectServerIdByHost" resultType="int">
+        select server_id from server_message where server_ip = #{host}
+    </select>
+</mapper>

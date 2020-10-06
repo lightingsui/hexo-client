@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lightingsui.linuxwatcher.mapper.CpuMessageMapper">
+  <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.CpuMessage">
+    <id column="cpu_id" jdbcType="INTEGER" property="cpuId" />
+    <result column="server_id" jdbcType="INTEGER" property="serverId" />
+    <result column="cpu_used" jdbcType="VARCHAR" property="cpuUsed" />
+    <result column="cpu_time" jdbcType="TIMESTAMP" property="cpuTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    cpu_id, server_id, cpu_used, cpu_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cpu_message
+    where cpu_id = #{cpuId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from cpu_message
+    where cpu_id = #{cpuId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
+    insert into cpu_message (cpu_id, server_id, cpu_used, 
+      cpu_time)
+    values (#{cpuId,jdbcType=INTEGER}, #{serverId,jdbcType=INTEGER}, #{cpuUsed,jdbcType=VARCHAR}, 
+      #{cpuTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
+    insert into cpu_message
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cpuId != null">
+        cpu_id,
+      </if>
+      <if test="serverId != null">
+        server_id,
+      </if>
+      <if test="cpuUsed != null">
+        cpu_used,
+      </if>
+      <if test="cpuTime != null">
+        cpu_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cpuId != null">
+        #{cpuId,jdbcType=INTEGER},
+      </if>
+      <if test="serverId != null">
+        #{serverId,jdbcType=INTEGER},
+      </if>
+      <if test="cpuUsed != null">
+        #{cpuUsed,jdbcType=VARCHAR},
+      </if>
+      <if test="cpuTime != null">
+        #{cpuTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
+    update cpu_message
+    <set>
+      <if test="serverId != null">
+        server_id = #{serverId,jdbcType=INTEGER},
+      </if>
+      <if test="cpuUsed != null">
+        cpu_used = #{cpuUsed,jdbcType=VARCHAR},
+      </if>
+      <if test="cpuTime != null">
+        cpu_time = #{cpuTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where cpu_id = #{cpuId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
+    update cpu_message
+    set server_id = #{serverId,jdbcType=INTEGER},
+      cpu_used = #{cpuUsed,jdbcType=VARCHAR},
+      cpu_time = #{cpuTime,jdbcType=TIMESTAMP}
+    where cpu_id = #{cpuId,jdbcType=INTEGER}
+  </update>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cpu_message
+  </select>
+  <sql id="Select_Cond_Sql">
+    <trim prefix="where" suffixOverrides="and">
+      <if test="cpuId != null">
+        and cpu_id = #{cpuId, jdbcType=INTEGER}
+      </if>
+      <if test="serverId != null">
+        and server_id = #{serverId, jdbcType=INTEGER}
+      </if>
+      <if test="cpuUsed != null">
+        and cpu_used = #{cpuUsed, jdbcType=VARCHAR}
+      </if>
+      <if test="cpuTime != null">
+        and cpu_time = #{cpuTime, jdbcType=TIMESTAMP}
+      </if>
+    </trim>
+  </sql>
+  <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage" resultMap="BaseResultMap">
+    select count(cpu_id) from cpu_message
+    <include refid="Select_Cond_Sql" />
+  </select>
+  <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cpu_message
+    <include refid="Select_Cond_Sql" />
+  </select>
+</mapper>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lightingsui.linuxwatcher.mapper.HardDiskMessageMapper">
+  <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.HardDiskMessage">
+    <id column="hard_disk_id" jdbcType="INTEGER" property="hardDiskId" />
+    <result column="server_id" jdbcType="INTEGER" property="serverId" />
+    <result column="hard_disk_used" jdbcType="VARCHAR" property="hardDiskUsed" />
+    <result column="hard_disk_time" jdbcType="TIMESTAMP" property="hardDiskTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    hard_disk_id, server_id, hard_disk_used, hard_disk_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hard_disk_message
+    where hard_disk_id = #{hardDiskId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from hard_disk_message
+    where hard_disk_id = #{hardDiskId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.HardDiskMessage">
+    insert into hard_disk_message (hard_disk_id, server_id, hard_disk_used, 
+      hard_disk_time)
+    values (#{hardDiskId,jdbcType=INTEGER}, #{serverId,jdbcType=INTEGER}, #{hardDiskUsed,jdbcType=VARCHAR}, 
+      #{hardDiskTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.HardDiskMessage">
+    insert into hard_disk_message
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="hardDiskId != null">
+        hard_disk_id,
+      </if>
+      <if test="serverId != null">
+        server_id,
+      </if>
+      <if test="hardDiskUsed != null">
+        hard_disk_used,
+      </if>
+      <if test="hardDiskTime != null">
+        hard_disk_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="hardDiskId != null">
+        #{hardDiskId,jdbcType=INTEGER},
+      </if>
+      <if test="serverId != null">
+        #{serverId,jdbcType=INTEGER},
+      </if>
+      <if test="hardDiskUsed != null">
+        #{hardDiskUsed,jdbcType=VARCHAR},
+      </if>
+      <if test="hardDiskTime != null">
+        #{hardDiskTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.HardDiskMessage">
+    update hard_disk_message
+    <set>
+      <if test="serverId != null">
+        server_id = #{serverId,jdbcType=INTEGER},
+      </if>
+      <if test="hardDiskUsed != null">
+        hard_disk_used = #{hardDiskUsed,jdbcType=VARCHAR},
+      </if>
+      <if test="hardDiskTime != null">
+        hard_disk_time = #{hardDiskTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where hard_disk_id = #{hardDiskId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.HardDiskMessage">
+    update hard_disk_message
+    set server_id = #{serverId,jdbcType=INTEGER},
+      hard_disk_used = #{hardDiskUsed,jdbcType=VARCHAR},
+      hard_disk_time = #{hardDiskTime,jdbcType=TIMESTAMP}
+    where hard_disk_id = #{hardDiskId,jdbcType=INTEGER}
+  </update>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hard_disk_message
+  </select>
+  <sql id="Select_Cond_Sql">
+    <trim prefix="where" suffixOverrides="and">
+      <if test="hardDiskId != null">
+        and hard_disk_id = #{hardDiskId, jdbcType=INTEGER}
+      </if>
+      <if test="serverId != null">
+        and server_id = #{serverId, jdbcType=INTEGER}
+      </if>
+      <if test="hardDiskUsed != null">
+        and hard_disk_used = #{hardDiskUsed, jdbcType=VARCHAR}
+      </if>
+      <if test="hardDiskTime != null">
+        and hard_disk_time = #{hardDiskTime, jdbcType=TIMESTAMP}
+      </if>
+    </trim>
+  </sql>
+  <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.HardDiskMessage" resultMap="BaseResultMap">
+    select count(hard_disk_id) from hard_disk_message
+    <include refid="Select_Cond_Sql" />
+  </select>
+  <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.HardDiskMessage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hard_disk_message
+    <include refid="Select_Cond_Sql" />
+  </select>
+</mapper>

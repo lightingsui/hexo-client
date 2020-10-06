@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lightingsui.linuxwatcher.mapper.NetworkMessageMapper">
+    <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.NetworkMessage">
+        <id column="network_id" jdbcType="INTEGER" property="networkId"/>
+        <result column="server_id" jdbcType="INTEGER" property="serverId"/>
+        <result column="network_out_speed" jdbcType="VARCHAR" property="networkOutSpeed"/>
+        <result column="network_in_speed" jdbcType="VARCHAR" property="networkInSpeed"/>
+        <result column="network_time" jdbcType="TIMESTAMP" property="networkTime"/>
+        <result column="network_out_max_speed" jdbcType="VARCHAR" property="networkOutMaxSpeed"/>
+        <result column="network_in_max_speed" jdbcType="VARCHAR" property="networkInMaxSpeed"/>
+        <result column="network_in_avg_speed" jdbcType="VARCHAR" property="networkInAvgSpeed"/>
+        <result column="network_out_avg_speed" jdbcType="VARCHAR" property="networkOutAvgSpeed"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    network_id, server_id, network_out_speed, network_in_speed, network_time, network_out_max_speed, 
+    network_in_max_speed, network_in_avg_speed, network_out_avg_speed
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from network_message
+        where network_id = #{networkId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from network_message
+    where network_id = #{networkId,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.NetworkMessage">
+    insert into network_message (network_id, server_id, network_out_speed, 
+      network_in_speed, network_time, network_out_max_speed, 
+      network_in_max_speed, network_in_avg_speed, network_out_avg_speed
+      )
+    values (#{networkId,jdbcType=INTEGER}, #{serverId,jdbcType=INTEGER}, #{networkOutSpeed,jdbcType=VARCHAR}, 
+      #{networkInSpeed,jdbcType=VARCHAR}, #{networkTime,jdbcType=TIMESTAMP}, #{networkOutMaxSpeed,jdbcType=VARCHAR}, 
+      #{networkInMaxSpeed,jdbcType=VARCHAR}, #{networkInAvgSpeed,jdbcType=VARCHAR}, #{networkOutAvgSpeed,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.NetworkMessage">
+        insert into network_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="networkId != null">
+                network_id,
+            </if>
+            <if test="serverId != null">
+                server_id,
+            </if>
+            <if test="networkOutSpeed != null">
+                network_out_speed,
+            </if>
+            <if test="networkInSpeed != null">
+                network_in_speed,
+            </if>
+            <if test="networkTime != null">
+                network_time,
+            </if>
+            <if test="networkOutMaxSpeed != null">
+                network_out_max_speed,
+            </if>
+            <if test="networkInMaxSpeed != null">
+                network_in_max_speed,
+            </if>
+            <if test="networkInAvgSpeed != null">
+                network_in_avg_speed,
+            </if>
+            <if test="networkOutAvgSpeed != null">
+                network_out_avg_speed,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="networkId != null">
+                #{networkId,jdbcType=INTEGER},
+            </if>
+            <if test="serverId != null">
+                #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="networkOutSpeed != null">
+                #{networkOutSpeed,jdbcType=VARCHAR},
+            </if>
+            <if test="networkInSpeed != null">
+                #{networkInSpeed,jdbcType=VARCHAR},
+            </if>
+            <if test="networkTime != null">
+                #{networkTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="networkOutMaxSpeed != null">
+                #{networkOutMaxSpeed,jdbcType=VARCHAR},
+            </if>
+            <if test="networkInMaxSpeed != null">
+                #{networkInMaxSpeed,jdbcType=VARCHAR},
+            </if>
+            <if test="networkInAvgSpeed != null">
+                #{networkInAvgSpeed,jdbcType=VARCHAR},
+            </if>
+            <if test="networkOutAvgSpeed != null">
+                #{networkOutAvgSpeed,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.NetworkMessage">
+        update network_message
+        <set>
+            <if test="serverId != null">
+                server_id = #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="networkOutSpeed != null">
+                network_out_speed = #{networkOutSpeed,jdbcType=VARCHAR},
+            </if>
+            <if test="networkInSpeed != null">
+                network_in_speed = #{networkInSpeed,jdbcType=VARCHAR},
+            </if>
+            <if test="networkTime != null">
+                network_time = #{networkTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="networkOutMaxSpeed != null">
+                network_out_max_speed = #{networkOutMaxSpeed,jdbcType=VARCHAR},
+            </if>
+            <if test="networkInMaxSpeed != null">
+                network_in_max_speed = #{networkInMaxSpeed,jdbcType=VARCHAR},
+            </if>
+            <if test="networkInAvgSpeed != null">
+                network_in_avg_speed = #{networkInAvgSpeed,jdbcType=VARCHAR},
+            </if>
+            <if test="networkOutAvgSpeed != null">
+                network_out_avg_speed = #{networkOutAvgSpeed,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where network_id = #{networkId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.NetworkMessage">
+    update network_message
+    set server_id = #{serverId,jdbcType=INTEGER},
+      network_out_speed = #{networkOutSpeed,jdbcType=VARCHAR},
+      network_in_speed = #{networkInSpeed,jdbcType=VARCHAR},
+      network_time = #{networkTime,jdbcType=TIMESTAMP},
+      network_out_max_speed = #{networkOutMaxSpeed,jdbcType=VARCHAR},
+      network_in_max_speed = #{networkInMaxSpeed,jdbcType=VARCHAR},
+      network_in_avg_speed = #{networkInAvgSpeed,jdbcType=VARCHAR},
+      network_out_avg_speed = #{networkOutAvgSpeed,jdbcType=VARCHAR}
+    where network_id = #{networkId,jdbcType=INTEGER}
+  </update>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from network_message
+    </select>
+    <sql id="Select_Cond_Sql">
+        <trim prefix="where" suffixOverrides="and">
+            <if test="networkId != null">
+                and network_id = #{networkId, jdbcType=INTEGER}
+            </if>
+            <if test="serverId != null">
+                and server_id = #{serverId, jdbcType=INTEGER}
+            </if>
+            <if test="networkOutSpeed != null">
+                and network_out_speed = #{networkOutSpeed, jdbcType=VARCHAR}
+            </if>
+            <if test="networkInSpeed != null">
+                and network_in_speed = #{networkInSpeed, jdbcType=VARCHAR}
+            </if>
+            <if test="networkTime != null">
+                and network_time = #{networkTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="networkOutMaxSpeed != null">
+                and network_out_max_speed = #{networkOutMaxSpeed, jdbcType=VARCHAR}
+            </if>
+            <if test="networkInMaxSpeed != null">
+                and network_in_max_speed = #{networkInMaxSpeed, jdbcType=VARCHAR}
+            </if>
+            <if test="networkInAvgSpeed != null">
+                and network_in_avg_speed = #{networkInAvgSpeed, jdbcType=VARCHAR}
+            </if>
+            <if test="networkOutAvgSpeed != null">
+                and network_out_avg_speed = #{networkOutAvgSpeed, jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </sql>
+    <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.NetworkMessage" resultMap="BaseResultMap">
+        select count(network_id) from network_message
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.NetworkMessage"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from network_message
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectNetworkStartTime" resultType="date">
+      SELECT
+	    network_time
+      FROM
+	    network_message
+      WHERE
+	    server_id = 5
+      ORDER BY
+	    network_time ASC
+	  LIMIT 1
+    </select>
+    <select id="selectRecentlyMessage" resultType="com.lightingsui.linuxwatcher.pojo.NetworkMessage" resultMap="BaseResultMap">
+        SELECT
+	        network_in_speed, network_out_speed, network_time
+        FROM
+	        network_message
+        WHERE
+	        server_id = #{param1}
+        ORDER BY
+	        network_time DESC
+	    LIMIT #{param2}
+    </select>
+    <select id="selectAssignMessage" resultType="com.lightingsui.linuxwatcher.pojo.NetworkMessage" resultMap="BaseResultMap">
+        SELECT
+            network_in_speed,
+            network_out_speed,
+            network_time
+        FROM
+	        network_message
+        WHERE
+	        server_id = #{param1}
+        AND network_time BETWEEN #{param2}
+        AND #{param3}
+        ORDER BY
+	        network_time DESC
+    </select>
+</mapper>
