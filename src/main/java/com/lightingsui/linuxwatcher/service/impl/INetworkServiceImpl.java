@@ -1,5 +1,6 @@
 package com.lightingsui.linuxwatcher.service.impl;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.lightingsui.linuxwatcher.command.LinuxCommand;
 import com.lightingsui.linuxwatcher.common.CommonResult;
@@ -26,7 +27,7 @@ import java.util.List;
 @Service
 public class INetworkServiceImpl implements INetworkService {
     private final static String NOT_INSTALL_DSTAT = "not found";
-    private final static int RECENTLY_TIME = 8;
+    public final static int RECENTLY_TIME = 8;
 
     @Autowired
     private ServerMessageMapper serverMessageMapper;
@@ -111,6 +112,16 @@ public class INetworkServiceImpl implements INetworkService {
         if(StringUtils.isBlank(beginDate) || StringUtils.isBlank(endDate)) {
             return CommonResult.getErrorInstance(ErrorResponseCode.ERROR_BEGIN_END_DATE);
         }
+
+        // 时间校验
+        DateTime parseBeginDate = DateUtil.parse(beginDate, "yyyy-MM-dd HH:mm:ss");
+        DateTime parseEndDate = DateUtil.parse(endDate, "yyyy-MM-dd HH:mm:ss");
+
+        if(DateUtil.compare(parseBeginDate, parseEndDate) > IMemoryServiceImpl.BEGIN_DATE_EQUALS_END_DATE) {
+            // 开始时间必须小于结束时间
+            return CommonResult.getErrorInstance(ErrorResponseCode.BEGIN_MUST_LT_END);
+        }
+
         int serverId = serverMessageMapper.selectServerIdByHost(connect.getHost());
 
         List<NetworkMessage> networkMessages = networkMessageMapper.selectAssignMessage(serverId, beginDate, endDate);

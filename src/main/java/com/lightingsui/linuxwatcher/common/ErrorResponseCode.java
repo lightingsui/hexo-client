@@ -23,6 +23,7 @@ public enum ErrorResponseCode implements IErrorCode {
 
     CURRENT_SERVER_NOT_HAVE_START_MESSAGE("500", "当前服务器没有第一次启动信息"),
     ERROR_BEGIN_END_DATE("500", "请提供开始时间和结束时间"),
+    BEGIN_MUST_LT_END("500", "开始时间必须小于结束时间"),
     ;
 
 

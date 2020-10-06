@@ -9,9 +9,12 @@ import java.text.DecimalFormat;
  * @since ：2020/10/4 21:07
  */
 public class ConversionOfNumberSystems {
-    public static String TO_GB = "GB";
-    public static String TO_MB = "MB";
-    public static String TO_KB = "KB";
+    public final static String TO_GB = "GB";
+    public final static String TO_MB = "MB";
+    public final static String TO_KB = "KB";
+
+    public static final boolean ENABLE_UNIT = true;
+    public static final boolean UN_ENABLE_UNIT = false;
 
     /**
      * 将 {@code byte} 转化为 {@code KB} 或 {@code MB} 或 {@code GB}
@@ -20,8 +23,8 @@ public class ConversionOfNumberSystems {
      * @return 转化后的结果
      * @since 1.0
      */
-    public static String byteConverseOther(String byteNum, String type) {
-        return byteConverseOther(Long.parseLong(byteNum), type);
+    public static String byteConverseOther(String byteNum, String type, boolean enableUnit) {
+        return byteConverseOther(Long.parseLong(byteNum), type, enableUnit);
     }
 
     /**
@@ -31,27 +34,41 @@ public class ConversionOfNumberSystems {
      * @return 转化后的结果
      * @since 1.0
      */
-    public static String byteConverseOther(long size, String type) {
+    public static String byteConverseOther(long size, String type, boolean enableUnit) {
         StringBuffer bytes = new StringBuffer();
         DecimalFormat format = new DecimalFormat("0.00");
         if (TO_GB.equals(type)) {
             double i = (size / (1024.0 * 1024.0 * 1024.0));
-            bytes.append(format.format(i)).append("GB");
+            bytes.append(format.format(i));
+            if(enableUnit) {
+                bytes.append("GB");
+            }
         }
         else if (TO_MB.equals(type)) {
             double i = (size / (1024.0 * 1024.0));
-            bytes.append(format.format(i)).append("MB");
+            bytes.append(format.format(i));
+            if(enableUnit) {
+                bytes.append("MB");
+            }
         }
         else if (TO_KB.equals(type)) {
             double i = (size / (1024.0));
-            bytes.append(format.format(i)).append("KB");
+            bytes.append(format.format(i));
+
+            if(enableUnit) {
+                bytes.append("KB");
+            }
         }
         else if (size < 1024) {
             if (size <= 0) {
-                bytes.append("0B");
+                bytes.append("0");
             }
             else {
-                bytes.append((int) size).append("B");
+                bytes.append((int) size);
+            }
+
+            if(enableUnit) {
+                bytes.append("B");
             }
         }
         return bytes.toString();
@@ -82,9 +99,12 @@ public class ConversionOfNumberSystems {
             case 'k':
             case 'K':
                 return value * 1024;
+            case 'm':
+            case 'M':
+                return value * 1024 * 1024;
             case 'g':
             case 'G':
-                return value * 1024 * 1024;
+                return value * 1024 * 1024 * 1024;
             default:
                 // fall through
                 return value;

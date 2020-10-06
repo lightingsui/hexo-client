@@ -1,8 +1,9 @@
 package com.lightingsui.linuxwatcher.pojo;
 
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Date;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * Table Name: memory_message
@@ -20,4 +21,7 @@ public class MemoryMessage {
 
     @ApiModelProperty("当前时间")
     private Date memoryTime;
+
+    @ApiModelProperty("内存可用空间")
+    private String memoryUsable;
 }

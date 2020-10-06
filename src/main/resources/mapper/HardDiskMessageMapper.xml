@@ -6,9 +6,10 @@
     <result column="server_id" jdbcType="INTEGER" property="serverId" />
     <result column="hard_disk_used" jdbcType="VARCHAR" property="hardDiskUsed" />
     <result column="hard_disk_time" jdbcType="TIMESTAMP" property="hardDiskTime" />
+    <result column="hard_disk_usable" jdbcType="VARCHAR" property="hardDiskUsable" />
   </resultMap>
   <sql id="Base_Column_List">
-    hard_disk_id, server_id, hard_disk_used, hard_disk_time
+    hard_disk_id, server_id, hard_disk_used, hard_disk_time, hard_disk_usable
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -22,9 +23,9 @@
   </delete>
   <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.HardDiskMessage">
     insert into hard_disk_message (hard_disk_id, server_id, hard_disk_used, 
-      hard_disk_time)
+      hard_disk_time, hard_disk_usable)
     values (#{hardDiskId,jdbcType=INTEGER}, #{serverId,jdbcType=INTEGER}, #{hardDiskUsed,jdbcType=VARCHAR}, 
-      #{hardDiskTime,jdbcType=TIMESTAMP})
+      #{hardDiskTime,jdbcType=TIMESTAMP}, #{hardDiskUsable,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.HardDiskMessage">
     insert into hard_disk_message
@@ -41,6 +42,9 @@
       <if test="hardDiskTime != null">
         hard_disk_time,
       </if>
+      <if test="hardDiskUsable != null">
+        hard_disk_usable,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="hardDiskId != null">
@@ -54,6 +58,9 @@
       </if>
       <if test="hardDiskTime != null">
         #{hardDiskTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="hardDiskUsable != null">
+        #{hardDiskUsable,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -69,6 +76,9 @@
       <if test="hardDiskTime != null">
         hard_disk_time = #{hardDiskTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="hardDiskUsable != null">
+        hard_disk_usable = #{hardDiskUsable,jdbcType=VARCHAR},
+      </if>
     </set>
     where hard_disk_id = #{hardDiskId,jdbcType=INTEGER}
   </update>
@@ -76,7 +86,8 @@
     update hard_disk_message
     set server_id = #{serverId,jdbcType=INTEGER},
       hard_disk_used = #{hardDiskUsed,jdbcType=VARCHAR},
-      hard_disk_time = #{hardDiskTime,jdbcType=TIMESTAMP}
+      hard_disk_time = #{hardDiskTime,jdbcType=TIMESTAMP},
+      hard_disk_usable = #{hardDiskUsable,jdbcType=VARCHAR}
     where hard_disk_id = #{hardDiskId,jdbcType=INTEGER}
   </update>
   <select id="selectAll" resultMap="BaseResultMap">
@@ -97,6 +108,9 @@
       </if>
       <if test="hardDiskTime != null">
         and hard_disk_time = #{hardDiskTime, jdbcType=TIMESTAMP}
+      </if>
+      <if test="hardDiskUsable != null">
+        and hard_disk_usable = #{hardDiskUsable, jdbcType=VARCHAR}
       </if>
     </trim>
   </sql>

@@ -1,113 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lightingsui.linuxwatcher.mapper.MemoryMessageMapper">
-  <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.MemoryMessage">
-    <id column="memory_id" jdbcType="INTEGER" property="memoryId" />
-    <result column="server_id" jdbcType="INTEGER" property="serverId" />
-    <result column="memory_used" jdbcType="VARCHAR" property="memoryUsed" />
-    <result column="memory_time" jdbcType="TIMESTAMP" property="memoryTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    memory_id, server_id, memory_used, memory_time
+    <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.MemoryMessage">
+        <id column="memory_id" jdbcType="INTEGER" property="memoryId"/>
+        <result column="server_id" jdbcType="INTEGER" property="serverId"/>
+        <result column="memory_used" jdbcType="VARCHAR" property="memoryUsed"/>
+        <result column="memory_time" jdbcType="TIMESTAMP" property="memoryTime"/>
+        <result column="memory_usable" jdbcType="VARCHAR" property="memoryUsable"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    memory_id, server_id, memory_used, memory_time, memory_usable
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from memory_message
-    where memory_id = #{memoryId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from memory_message
+        where memory_id = #{memoryId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from memory_message
     where memory_id = #{memoryId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage">
+    <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage">
     insert into memory_message (memory_id, server_id, memory_used, 
-      memory_time)
+      memory_time, memory_usable)
     values (#{memoryId,jdbcType=INTEGER}, #{serverId,jdbcType=INTEGER}, #{memoryUsed,jdbcType=VARCHAR}, 
-      #{memoryTime,jdbcType=TIMESTAMP})
+      #{memoryTime,jdbcType=TIMESTAMP}, #{memoryUsable,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage">
-    insert into memory_message
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="memoryId != null">
-        memory_id,
-      </if>
-      <if test="serverId != null">
-        server_id,
-      </if>
-      <if test="memoryUsed != null">
-        memory_used,
-      </if>
-      <if test="memoryTime != null">
-        memory_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="memoryId != null">
-        #{memoryId,jdbcType=INTEGER},
-      </if>
-      <if test="serverId != null">
-        #{serverId,jdbcType=INTEGER},
-      </if>
-      <if test="memoryUsed != null">
-        #{memoryUsed,jdbcType=VARCHAR},
-      </if>
-      <if test="memoryTime != null">
-        #{memoryTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage">
-    update memory_message
-    <set>
-      <if test="serverId != null">
-        server_id = #{serverId,jdbcType=INTEGER},
-      </if>
-      <if test="memoryUsed != null">
-        memory_used = #{memoryUsed,jdbcType=VARCHAR},
-      </if>
-      <if test="memoryTime != null">
-        memory_time = #{memoryTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where memory_id = #{memoryId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage">
+    <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage">
+        insert into memory_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="memoryId != null">
+                memory_id,
+            </if>
+            <if test="serverId != null">
+                server_id,
+            </if>
+            <if test="memoryUsed != null">
+                memory_used,
+            </if>
+            <if test="memoryTime != null">
+                memory_time,
+            </if>
+            <if test="memoryUsable != null">
+                memory_usable,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="memoryId != null">
+                #{memoryId,jdbcType=INTEGER},
+            </if>
+            <if test="serverId != null">
+                #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="memoryUsed != null">
+                #{memoryUsed,jdbcType=VARCHAR},
+            </if>
+            <if test="memoryTime != null">
+                #{memoryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="memoryUsable != null">
+                #{memoryUsable,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage">
+        update memory_message
+        <set>
+            <if test="serverId != null">
+                server_id = #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="memoryUsed != null">
+                memory_used = #{memoryUsed,jdbcType=VARCHAR},
+            </if>
+            <if test="memoryTime != null">
+                memory_time = #{memoryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="memoryUsable != null">
+                memory_usable = #{memoryUsable,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where memory_id = #{memoryId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage">
     update memory_message
     set server_id = #{serverId,jdbcType=INTEGER},
       memory_used = #{memoryUsed,jdbcType=VARCHAR},
-      memory_time = #{memoryTime,jdbcType=TIMESTAMP}
+      memory_time = #{memoryTime,jdbcType=TIMESTAMP},
+      memory_usable = #{memoryUsable,jdbcType=VARCHAR}
     where memory_id = #{memoryId,jdbcType=INTEGER}
   </update>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from memory_message
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from memory_message
+    </select>
+    <sql id="Select_Cond_Sql">
+        <trim prefix="where" suffixOverrides="and">
+            <if test="memoryId != null">
+                and memory_id = #{memoryId, jdbcType=INTEGER}
+            </if>
+            <if test="serverId != null">
+                and server_id = #{serverId, jdbcType=INTEGER}
+            </if>
+            <if test="memoryUsed != null">
+                and memory_used = #{memoryUsed, jdbcType=VARCHAR}
+            </if>
+            <if test="memoryTime != null">
+                and memory_time = #{memoryTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="memoryUsable != null">
+                and memory_usable = #{memoryUsable, jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </sql>
+    <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage" resultMap="BaseResultMap">
+        select count(memory_id) from memory_message
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from memory_message
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectRecentlyMessage" resultType="com.lightingsui.linuxwatcher.pojo.MemoryMessage"
+            resultMap="BaseResultMap">
+    SELECT
+	    memory_used, memory_usable, memory_time
+    FROM
+	    memory_message
+    WHERE
+	    server_id = #{param1}
+    ORDER BY
+	    memory_time DESC
+	LIMIT #{param2}
   </select>
-  <sql id="Select_Cond_Sql">
-    <trim prefix="where" suffixOverrides="and">
-      <if test="memoryId != null">
-        and memory_id = #{memoryId, jdbcType=INTEGER}
-      </if>
-      <if test="serverId != null">
-        and server_id = #{serverId, jdbcType=INTEGER}
-      </if>
-      <if test="memoryUsed != null">
-        and memory_used = #{memoryUsed, jdbcType=VARCHAR}
-      </if>
-      <if test="memoryTime != null">
-        and memory_time = #{memoryTime, jdbcType=TIMESTAMP}
-      </if>
-    </trim>
-  </sql>
-  <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage" resultMap="BaseResultMap">
-    select count(memory_id) from memory_message
-    <include refid="Select_Cond_Sql" />
+    <select id="selectMemoryStartTime" resultType="date">
+    SELECT
+	    memory_time
+    FROM
+	    memory_message
+    WHERE
+	    server_id = #{serverId}
+    ORDER BY
+	    memory_time ASC
+	LIMIT 1
   </select>
-  <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.MemoryMessage" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from memory_message
-    <include refid="Select_Cond_Sql" />
-  </select>
+    <select id="selectAssignMessage" resultType="com.lightingsui.linuxwatcher.pojo.MemoryMessage" resultMap="BaseResultMap">
+    SELECT
+        memory_used,
+        memory_usable,
+        memory_time
+    FROM
+        memory_message
+    WHERE
+        server_id = #{param1}
+        AND memory_time BETWEEN #{param2}
+        AND #{param3}
+    ORDER BY
+        memory_time DESC
+    </select>
 </mapper>

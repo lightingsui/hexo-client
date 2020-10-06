@@ -7,6 +7,7 @@ import com.lightingsui.linuxwatcher.common.CommonResult;
 import com.lightingsui.linuxwatcher.common.ErrorResponseCode;
 import com.lightingsui.linuxwatcher.common.SuccessResponseCode;
 import com.lightingsui.linuxwatcher.config.LogConfig;
+import com.lightingsui.linuxwatcher.config.TaskSchedule;
 import com.lightingsui.linuxwatcher.mapper.ServerMessageMapper;
 import com.lightingsui.linuxwatcher.model.ServerMessage;
 import com.lightingsui.linuxwatcher.model.ServerMessageUname;
@@ -48,12 +49,12 @@ public class IConnectServiceImpl implements IConnectService {
     public final String NOT_HEXO_FOLDER = "Usage: hexo <command>";
     public final String HEXO_SUB_CONTENT = "/source/_posts/";
 
-    private static final int DATABASE_ERROR = 0;
+    public static final int DATABASE_ERROR = 0;
 
     private static Object LOCK = new Object();
 
 
-    private static Pattern compile;
+    public static Pattern compile;
 
     static {
         compile = Pattern.compile("\\d+");
@@ -117,6 +118,13 @@ public class IConnectServiceImpl implements IConnectService {
                     if (effectCount == DATABASE_ERROR) {
                         return CommonResult.getErrorInstance(ErrorResponseCode.DATABASE_ERROR);
                     }
+
+                    // 加入到定时任务中
+                    com.lightingsui.linuxwatcher.pojo.ServerMessage taskServerMessage = new com.lightingsui.linuxwatcher.pojo.ServerMessage();
+                    taskServerMessage.setServerPort(String.valueOf(serverMessage.getPort()));
+                    taskServerMessage.setServerPassword(serverMessage.getPassword());
+                    taskServerMessage.setServerIp(serverMessage.getHost());
+                    TaskSchedule.TASK.add(taskServerMessage);
                 }
 
                 // > 连接成功存进 session
@@ -255,7 +263,7 @@ public class IConnectServiceImpl implements IConnectService {
             size += Long.parseLong(matcher.group().split(" ")[0]);
         }
 
-        serverMessage.setHardDiskTotal(ConversionOfNumberSystems.byteConverseOther(size, ConversionOfNumberSystems.TO_GB));
+        serverMessage.setHardDiskTotal(ConversionOfNumberSystems.byteConverseOther(size, ConversionOfNumberSystems.TO_GB, ConversionOfNumberSystems.ENABLE_UNIT));
 
         return true;
     }

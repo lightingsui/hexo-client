@@ -17,10 +17,14 @@ public class LinuxCommand {
     public static final String CD = "cd";
 
 
+    /** 内存查看命令 */
     public static final String MEMORY_MESSAGE = "free -m | tail -n +2 | head -n 1";
     public static final String MEMORY_MESSAGE_SWAP = "free -m | tail -n +3 | head -n 1";
 
+    /** 硬盘查询命令 */
     public static final String HARD_DISK_TOTAL = "fdisk -l | grep Disk";
+    public static final String HARD_DISK_USED = "df -lh | tail -n +2 | awk '{print $3}'";
+    public static final String HARD_DISK_TOTAL_UPGRADE = "df -lh | tail -n +2 | awk '{print $2}'";
 
 
     public static  final String SYSTEM_STARTUP_SECOND_TIME = "cat /proc/uptime | cut -d\" \" -f1";

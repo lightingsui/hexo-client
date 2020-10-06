@@ -20,4 +20,6 @@ public class HardDiskMessage {
 
     @ApiModelProperty("当前时间")
     private Date hardDiskTime;
+
+    private String hardDiskUsable;
 }

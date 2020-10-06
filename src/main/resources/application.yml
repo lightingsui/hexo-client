@@ -48,10 +48,5 @@ mybatis-generator-repackaging:
     targetPackage: mapper
   # 表信息
   tables:
-    - blog_message
-    - cpu_message
-    - server_message
-    - network_message
-    - memory_message
     - hard_disk_message
 

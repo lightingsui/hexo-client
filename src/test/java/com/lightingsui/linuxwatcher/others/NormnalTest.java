@@ -9,6 +9,8 @@ import com.lightingsui.linuxwatcher.ssh.SSHHelper;
 import com.lightingsui.linuxwatcher.utils.ConversionOfNumberSystems;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,7 +56,7 @@ public class NormnalTest {
 
 
         System.out.println("=================");
-        System.out.println(ConversionOfNumberSystems.byteConverseOther(size, ConversionOfNumberSystems.TO_GB));
+        System.out.println(ConversionOfNumberSystems.byteConverseOther(size, ConversionOfNumberSystems.TO_GB, ConversionOfNumberSystems.ENABLE_UNIT));
     }
 
     @Test
@@ -115,7 +117,8 @@ public class NormnalTest {
             Long r2 = ConversionOfNumberSystems.OtherToBytes(s1[s1.length - 1]);
 
 
-            System.out.println(ConversionOfNumberSystems.byteConverseOther(r1, ConversionOfNumberSystems.TO_KB) + "      " +  ConversionOfNumberSystems.byteConverseOther(r2, ConversionOfNumberSystems.TO_KB));
+            System.out.println(ConversionOfNumberSystems.byteConverseOther(r1, ConversionOfNumberSystems.TO_KB, ConversionOfNumberSystems.ENABLE_UNIT) + "      " +
+                    ConversionOfNumberSystems.byteConverseOther(r2, ConversionOfNumberSystems.TO_KB, ConversionOfNumberSystems.ENABLE_UNIT));
         }
     }
 
@@ -140,8 +143,96 @@ public class NormnalTest {
 
         System.out.println(aLong);
 
-        String s = ConversionOfNumberSystems.byteConverseOther(aLong, ConversionOfNumberSystems.TO_KB);
+        String s = ConversionOfNumberSystems.byteConverseOther(aLong, ConversionOfNumberSystems.TO_KB, ConversionOfNumberSystems.ENABLE_UNIT);
         System.out.println(s);
+    }
+
+    @Test
+    public void test09() {
+        ServerMessage serverMessage = new ServerMessage();
+        serverMessage.setHost("39.106.81.183");
+        serverMessage.setPassword("Aa13404420573");
+        serverMessage.setPort(22);
+
+        SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
+        sshHelper.getConnection();
+
+        String memoryTotal = sshHelper.execCommand(LinuxCommand.MEMORY_MESSAGE, SSHControl.UN_ENABLE_ENTER);
+        String swapTotal = sshHelper.execCommand(LinuxCommand.MEMORY_MESSAGE_SWAP, SSHControl.UN_ENABLE_ENTER);
+
+        Pattern compile = Pattern.compile("\\d+");
+        Matcher matcher = compile.matcher(memoryTotal);
+        List<Integer> list = new ArrayList<>();
+
+        while(matcher.find()) {
+            list.add(Integer.parseInt(matcher.group()));
+        }
+
+        Matcher matcher1 = compile.matcher(swapTotal);
+        List<Integer> list1 = new ArrayList<>();
+
+        while(matcher1.find()) {
+            list1.add(Integer.parseInt(matcher1.group()));
+        }
+
+        int used = list.get(1) + list1.get(1);
+        int usable = list.get(5) + list1.get(2);
+
+
+        System.out.println("已用：" + list.get(1) + "   可用：" + list.get(5));
+        System.out.println("已用：" + list1.get(1) + "   可用：" + list1.get(2));
+    }
+
+    @Test
+    public void test10() {
+        ServerMessage serverMessage = new ServerMessage();
+        serverMessage.setHost("39.106.81.183");
+        serverMessage.setPassword("Aa13404420573");
+        serverMessage.setPort(22);
+
+        SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
+        sshHelper.getConnection();
+
+        String hardDiskUsed = sshHelper.execCommand(LinuxCommand.HARD_DISK_USED, SSHControl.ENABLE_ENTER);
+        String hardDiskTotal = sshHelper.execCommand(LinuxCommand.HARD_DISK_TOTAL_UPGRADE, SSHControl.ENABLE_ENTER);
+
+
+        // 获取使用量
+        List<Float> res = new ArrayList<>();
+        Pattern compile = Pattern.compile("\\d+(G|M|K|B)");
+        Matcher matcher = compile.matcher(hardDiskUsed);
+
+        while(matcher.find()) {
+            String group = matcher.group();
+            Long tmp = ConversionOfNumberSystems.OtherToBytes(group);
+            String GB = ConversionOfNumberSystems.byteConverseOther(tmp, ConversionOfNumberSystems.TO_GB, ConversionOfNumberSystems.UN_ENABLE_UNIT);
+
+            res.add(Float.parseFloat(GB));
+        }
+
+        Float used = res.stream().reduce(Float::sum).get();
+
+
+        // 获取总量
+        List<Float> resTotal = new ArrayList<>();
+        Matcher totalMatcher = compile.matcher(hardDiskTotal);
+
+        while(totalMatcher.find()) {
+            String group = totalMatcher.group();
+            Long tmp = ConversionOfNumberSystems.OtherToBytes(group);
+            String GB = ConversionOfNumberSystems.byteConverseOther(tmp, ConversionOfNumberSystems.TO_GB, ConversionOfNumberSystems.UN_ENABLE_UNIT);
+
+            resTotal.add(Float.parseFloat(GB));
+        }
+
+        Float total = resTotal.stream().reduce(Float::sum).get();
+
+        String formatTotal = String.format("%.2f", total);
+        String formatUsed = String.format("%.2f", used);
+
+
+        System.out.println(formatTotal);
+        System.out.println(formatUsed);
     }
 
 }
