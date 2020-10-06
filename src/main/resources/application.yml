@@ -1,0 +1,57 @@
+server:
+  port: 8080
+spring:
+  # redis
+  redis:
+    host: 39.106.81.183
+    port: 6379
+    jedis:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 2000
+        # 连接池最大阻塞等待时间（使用负值表示没有限制
+        max-wait: -1
+        # 连接池中的最大空闲连接
+        max-idle: 10
+        # 连接池中的最小空闲连接
+        min-idle: 0
+    # 连接超时时间（毫秒）
+    timeout: 10000
+    password: Aa13404420573
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://172.21.18.202:3306/linux_watch?characterEncoding=utf-8
+    username: root
+    password: Aa13404420573.
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  type-aliases-package: com.lightingsui.linuxwatcher.pojo
+
+logging:
+  level:
+    com.lightingsui.linuxwatcher: debug
+
+mybatis-generator-repackaging:
+  # model位置
+  pojo-location:
+    targetProject: src\main\java
+    targetPackage: com.lightingsui.linuxwatcher.pojo
+  # mapper位置
+  mapper-location:
+    targetProject: src\main\java
+    targetPackage: com.lightingsui.linuxwatcher.mapper
+  # xml文件位置
+  mapper-xml-location:
+    targetProject: src\main\resources
+    targetPackage: mapper
+  # 表信息
+  tables:
+    - blog_message
+    - cpu_message
+    - server_message
+    - network_message
+    - memory_message
+    - hard_disk_message
+

@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.lightingsui</groupId>
-    <artifactId>hexoclient</artifactId>
+    <artifactId>linux-watcher</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>hexoclient</name>
+    <name>linuxwatcher</name>
     <description>Demo project for Spring Boot</description>
     <packaging>war</packaging>
 
@@ -23,6 +23,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.1.0</version>
         </dependency>
 
         <dependency>
@@ -43,29 +50,8 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
 
-        <!--Swagger-UI API Creator-->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>2.7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.7.0</version>
-        </dependency>
 
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.8.1</version>
-        </dependency>
 
         <dependency>
             <groupId>com.jcraft</groupId>
@@ -80,27 +66,34 @@
             <version>1.2.17</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.lighting</groupId>
+            <artifactId>MyBatisGeneratorRepackaging</artifactId>
+            <version>1.0.0-beta</version>
+        </dependency>
 
+
+
+
+
+        <!-- 开启redis -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <!-- 移除嵌入式tomcat插件 -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-
 
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.4.4</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.12</version>
+        </dependency>
 
 
     </dependencies>
