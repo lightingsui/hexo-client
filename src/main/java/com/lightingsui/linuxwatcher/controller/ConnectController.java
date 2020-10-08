@@ -2,6 +2,7 @@ package com.lightingsui.linuxwatcher.controller;
 
 import com.lightingsui.linuxwatcher.common.CommonResult;
 import com.lightingsui.linuxwatcher.model.ServerMessage;
+import com.lightingsui.linuxwatcher.model.ServerMessageUname;
 import com.lightingsui.linuxwatcher.model.UpLoadContent;
 import com.lightingsui.linuxwatcher.service.IConnectService;
 import com.lightingsui.linuxwatcher.vo.LastLoginMessageVo;
@@ -48,6 +49,18 @@ public class ConnectController {
     @RequestMapping(value = "server-message", method = RequestMethod.GET)
     public CommonResult<ServerMessageVo> getServerMessage(HttpServletRequest request) {
         return connectService.getServerMessage((ServerMessage)request.getSession().getAttribute("connect"));
+    }
+
+    @ApiOperation("获取欢迎语")
+    @RequestMapping(value = "welcome_speech", method = RequestMethod.GET)
+    public CommonResult<String> getWelcomeSpeech(HttpServletRequest request) {
+        return connectService.getWelcomeSpeech((ServerMessage)request.getSession().getAttribute("connect"));
+    }
+
+    @ApiOperation("获取服务器系统信息")
+    @RequestMapping(value = "uname-message", method = RequestMethod.GET)
+    public CommonResult<ServerMessageUname> getUnameMessage(HttpServletRequest request) {
+        return connectService.getServerMessageUname((ServerMessage)request.getSession().getAttribute("connect"));
     }
 
 

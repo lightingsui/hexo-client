@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 public interface IConnectService {
     CommonResult<Boolean> connect(ServerMessage serverMessage, HttpServletRequest request);
 
-    ServerMessageUname getServerMessageUname(ServerMessage connect);
+    CommonResult<ServerMessageUname> getServerMessageUname(ServerMessage connect);
 
     CommonResult<LastLoginMessageVo> getLastLoginMessage(ServerMessage connect, HttpServletRequest  request);
 
@@ -26,4 +26,6 @@ public interface IConnectService {
     boolean uploadBlog(ServerMessage connect, String content, String fileName);
 
     CommonResult<ServerMessageVo> getServerMessage(ServerMessage connect);
+
+    CommonResult<String> getWelcomeSpeech(ServerMessage connect);
 }

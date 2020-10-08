@@ -1,25 +1,24 @@
-package com.lightingsui.linuxwatcher.pojo;
+package com.lightingsui.linuxwatcher.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
 
 /**
- * Table Name: cpu_message
+ * cpu vo
+ *
+ * @author ：隋亮亮
+ * @since ：2020/10/8 17:06
  */
 @Data
-public class CpuMessage {
-    @ApiModelProperty("cpu使用情况id")
-    private Integer cpuId;
-
-    @ApiModelProperty("服务器id")
-    private Integer serverId;
-
+public class CPUMessageVo {
     @ApiModelProperty("cpu使用量")
     private String cpuUsed;
 
     @ApiModelProperty("当前时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date cpuTime;
 
     @ApiModelProperty("用户空间占用CPU百分比")

@@ -7,6 +7,7 @@ import com.lightingsui.linuxwatcher.common.CommonResult;
 import com.lightingsui.linuxwatcher.common.ErrorResponseCode;
 import com.lightingsui.linuxwatcher.common.SuccessResponseCode;
 import com.lightingsui.linuxwatcher.config.LogConfig;
+import com.lightingsui.linuxwatcher.config.PatternConfig;
 import com.lightingsui.linuxwatcher.config.TaskSchedule;
 import com.lightingsui.linuxwatcher.mapper.ServerMessageMapper;
 import com.lightingsui.linuxwatcher.model.ServerMessage;
@@ -30,7 +31,6 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author ：隋亮亮
@@ -54,17 +54,11 @@ public class IConnectServiceImpl implements IConnectService {
     private static Object LOCK = new Object();
 
 
-    public static Pattern compile;
-
-    static {
-        compile = Pattern.compile("\\d+");
-    }
-
-
     @Override
     public CommonResult<Boolean> connect(ServerMessage serverMessage, HttpServletRequest request) {
         // 参数检查
-        boolean paramCheck = StringUtils.isBlank(serverMessage.getHost()) || StringUtils.isBlank(serverMessage.getPassword());
+        boolean paramCheck = StringUtils.isBlank(serverMessage.getHost()) || StringUtils.isBlank(serverMessage.getPassword())
+                || serverMessage.getPort() == null;
 
         if (paramCheck) {
             return CommonResult.getErrorInstance(ErrorResponseCode.NESTED_MESSAGE_NOT_SUPPORT);
@@ -119,6 +113,7 @@ public class IConnectServiceImpl implements IConnectService {
                         return CommonResult.getErrorInstance(ErrorResponseCode.DATABASE_ERROR);
                     }
 
+                    // TODO: 插入信息
                     // 加入到定时任务中
                     com.lightingsui.linuxwatcher.pojo.ServerMessage taskServerMessage = new com.lightingsui.linuxwatcher.pojo.ServerMessage();
                     taskServerMessage.setServerPort(String.valueOf(serverMessage.getPort()));
@@ -222,11 +217,10 @@ public class IConnectServiceImpl implements IConnectService {
         if (COMMAND_RUN_FAILED.equals(commandResult) || COMMAND_RUN_FAILED.equals(commandSwapResult)) {
             return false;
         }
-        Map<String, String> map = new HashMap<>();
 
         // 匹配数据
-        Matcher matcher = compile.matcher(commandResult);
-        Matcher matcherSwap = compile.matcher(commandSwapResult);
+        Matcher matcher = PatternConfig.compile.matcher(commandResult);
+        Matcher matcherSwap = PatternConfig.compile.matcher(commandSwapResult);
 
         if (matcher.find() && matcherSwap.find()) {
             String memoryTotal = matcher.group();
@@ -256,7 +250,7 @@ public class IConnectServiceImpl implements IConnectService {
             return false;
         }
 
-        Matcher matcher = compile.matcher(commandResult);
+        Matcher matcher = PatternConfig.compile.matcher(commandResult);
 
         long size = 0L;
         while (matcher.find()) {
@@ -321,13 +315,13 @@ public class IConnectServiceImpl implements IConnectService {
      * @return
      */
     private boolean getProcessMessage(SSHHelper sshHelper, ServerMessageVo serverMessage) {
-        String commandResult = sshHelper.execCommand(LinuxCommand.UNAME, false);
+        String commandResult = sshHelper.execCommand(LinuxCommand.PROCESS, false);
 
         if (COMMAND_RUN_FAILED.equals(commandResult)) {
             return false;
         }
 
-        Matcher matcher = compile.matcher(commandResult);
+        Matcher matcher = PatternConfig.compile.matcher(commandResult);
         List<String> res = new ArrayList<>();
 
         while (matcher.find()) {
@@ -393,9 +387,32 @@ public class IConnectServiceImpl implements IConnectService {
         return CommonResult.getSuccessInstance(lastLoginMessageVo);
     }
 
+    @Override
+    public CommonResult<String> getWelcomeSpeech(ServerMessage connect) {
+        // 参数校验
+        if (connect == null) {
+            return CommonResult.getErrorInstance(ErrorResponseCode.LOGIN_FAILED_UPDATE);
+        }
+
+        // 使用多线程查询信息
+        SSHHelper sshHelper = new SSHHelper(connect.getHost(), connect.getPassword());
+        sshHelper.getConnection();
+
+        String commandResult = sshHelper.execCommand(LinuxCommand.LINUX_WELCOME_SPEECH, false);
+
+        if (COMMAND_RUN_FAILED.equals(commandResult)) {
+            return null;
+        }
+        return CommonResult.getSuccessInstance(commandResult);
+    }
 
     @Override
-    public ServerMessageUname getServerMessageUname(ServerMessage connect) {
+    public CommonResult<ServerMessageUname> getServerMessageUname(ServerMessage connect) {
+        // 参数校验
+        if (connect == null) {
+            return CommonResult.getErrorInstance(ErrorResponseCode.LOGIN_FAILED_UPDATE);
+        }
+
         SSHHelper sshHelper = new SSHHelper(connect.getHost(), connect.getUser(), connect.getPassword(), connect.getPort());
         boolean connection = sshHelper.getConnection();
 
@@ -408,7 +425,7 @@ public class IConnectServiceImpl implements IConnectService {
                 return null;
             }
 
-            return ParseServerMessage.parse(res);
+            return CommonResult.getSuccessInstance(ParseServerMessage.parse(res));
         }
 
         LogConfig.log("connect is null, 获取服务器信息时连接失败", LogConfig.ERROR);
@@ -481,6 +498,7 @@ public class IConnectServiceImpl implements IConnectService {
     }
 
 
+    /** 五种信息采集内部类 */
     private class MemoryThread extends Thread {
         private CountDownLatch countDownLatch;
         private SSHHelper sshHelper;

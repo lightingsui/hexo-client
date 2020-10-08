@@ -124,4 +124,40 @@
     from hard_disk_message
     <include refid="Select_Cond_Sql" />
   </select>
+  <select id="selectHardDiskStartTime" resultType="date">
+    SELECT
+        hard_disk_time
+    FROM
+        hard_disk_message
+    WHERE
+        server_id = #{serverId}
+    ORDER BY
+        hard_disk_time ASC
+	LIMIT 1
+  </select>
+  <select id="selectRecentlyMessage" resultType="com.lightingsui.linuxwatcher.pojo.HardDiskMessage" resultMap="BaseResultMap">
+    SELECT
+        hard_disk_used, hard_disk_usable, hard_disk_time
+    FROM
+        hard_disk_message
+    WHERE
+        server_id = #{param1}
+    ORDER BY
+        hard_disk_time DESC
+	LIMIT #{param2}
+  </select>
+  <select id="selectAssignMessage" resultType="com.lightingsui.linuxwatcher.pojo.HardDiskMessage" resultMap="BaseResultMap">
+    SELECT
+        hard_disk_used,
+        hard_disk_usable,
+        hard_disk_time
+    FROM
+        hard_disk_message
+    WHERE
+        server_id = #{param1}
+        AND hard_disk_time BETWEEN #{param2}
+        AND #{param3}
+    ORDER BY
+        hard_disk_time DESC
+  </select>
 </mapper>

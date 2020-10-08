@@ -17,6 +17,6 @@ public class ThreadPoolConfig {
 
     static {
         executor = new ThreadPoolExecutor(20, 30, 1000, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(100), new NamedThreadFactory("time", false));
+                new ArrayBlockingQueue<Runnable>(100), new NamedThreadFactory("time", false), new ThreadPoolExecutor.DiscardPolicy());
     }
 }

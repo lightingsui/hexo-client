@@ -1,113 +1,227 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lightingsui.linuxwatcher.mapper.CpuMessageMapper">
-  <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.CpuMessage">
-    <id column="cpu_id" jdbcType="INTEGER" property="cpuId" />
-    <result column="server_id" jdbcType="INTEGER" property="serverId" />
-    <result column="cpu_used" jdbcType="VARCHAR" property="cpuUsed" />
-    <result column="cpu_time" jdbcType="TIMESTAMP" property="cpuTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    cpu_id, server_id, cpu_used, cpu_time
+    <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.CpuMessage">
+        <id column="cpu_id" jdbcType="INTEGER" property="cpuId"/>
+        <result column="server_id" jdbcType="INTEGER" property="serverId"/>
+        <result column="cpu_used" jdbcType="VARCHAR" property="cpuUsed"/>
+        <result column="cpu_time" jdbcType="TIMESTAMP" property="cpuTime"/>
+        <result column="cpu_us" jdbcType="VARCHAR" property="cpuUs"/>
+        <result column="cpu_sy" jdbcType="VARCHAR" property="cpuSy"/>
+        <result column="cpu_ni" jdbcType="VARCHAR" property="cpuNi"/>
+        <result column="cpu_wa" jdbcType="VARCHAR" property="cpuWa"/>
+        <result column="cpu_hi" jdbcType="VARCHAR" property="cpuHi"/>
+        <result column="cpu_si" jdbcType="VARCHAR" property="cpuSi"/>
+        <result column="cpu_st" jdbcType="VARCHAR" property="cpuSt"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    cpu_id, server_id, cpu_used, cpu_time, cpu_us, cpu_sy, cpu_ni, cpu_wa, cpu_hi, cpu_si, 
+    cpu_st
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from cpu_message
-    where cpu_id = #{cpuId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from cpu_message
+        where cpu_id = #{cpuId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from cpu_message
     where cpu_id = #{cpuId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
+    <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
     insert into cpu_message (cpu_id, server_id, cpu_used, 
-      cpu_time)
+      cpu_time, cpu_us, cpu_sy, 
+      cpu_ni, cpu_wa, cpu_hi, 
+      cpu_si, cpu_st)
     values (#{cpuId,jdbcType=INTEGER}, #{serverId,jdbcType=INTEGER}, #{cpuUsed,jdbcType=VARCHAR}, 
-      #{cpuTime,jdbcType=TIMESTAMP})
+      #{cpuTime,jdbcType=TIMESTAMP}, #{cpuUs,jdbcType=VARCHAR}, #{cpuSy,jdbcType=VARCHAR}, 
+      #{cpuNi,jdbcType=VARCHAR}, #{cpuWa,jdbcType=VARCHAR}, #{cpuHi,jdbcType=VARCHAR}, 
+      #{cpuSi,jdbcType=VARCHAR}, #{cpuSt,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
-    insert into cpu_message
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="cpuId != null">
-        cpu_id,
-      </if>
-      <if test="serverId != null">
-        server_id,
-      </if>
-      <if test="cpuUsed != null">
-        cpu_used,
-      </if>
-      <if test="cpuTime != null">
-        cpu_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="cpuId != null">
-        #{cpuId,jdbcType=INTEGER},
-      </if>
-      <if test="serverId != null">
-        #{serverId,jdbcType=INTEGER},
-      </if>
-      <if test="cpuUsed != null">
-        #{cpuUsed,jdbcType=VARCHAR},
-      </if>
-      <if test="cpuTime != null">
-        #{cpuTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
-    update cpu_message
-    <set>
-      <if test="serverId != null">
-        server_id = #{serverId,jdbcType=INTEGER},
-      </if>
-      <if test="cpuUsed != null">
-        cpu_used = #{cpuUsed,jdbcType=VARCHAR},
-      </if>
-      <if test="cpuTime != null">
-        cpu_time = #{cpuTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where cpu_id = #{cpuId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
+    <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
+        insert into cpu_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cpuId != null">
+                cpu_id,
+            </if>
+            <if test="serverId != null">
+                server_id,
+            </if>
+            <if test="cpuUsed != null">
+                cpu_used,
+            </if>
+            <if test="cpuTime != null">
+                cpu_time,
+            </if>
+            <if test="cpuUs != null">
+                cpu_us,
+            </if>
+            <if test="cpuSy != null">
+                cpu_sy,
+            </if>
+            <if test="cpuNi != null">
+                cpu_ni,
+            </if>
+            <if test="cpuWa != null">
+                cpu_wa,
+            </if>
+            <if test="cpuHi != null">
+                cpu_hi,
+            </if>
+            <if test="cpuSi != null">
+                cpu_si,
+            </if>
+            <if test="cpuSt != null">
+                cpu_st,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cpuId != null">
+                #{cpuId,jdbcType=INTEGER},
+            </if>
+            <if test="serverId != null">
+                #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="cpuUsed != null">
+                #{cpuUsed,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuTime != null">
+                #{cpuTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cpuUs != null">
+                #{cpuUs,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuSy != null">
+                #{cpuSy,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuNi != null">
+                #{cpuNi,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuWa != null">
+                #{cpuWa,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuHi != null">
+                #{cpuHi,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuSi != null">
+                #{cpuSi,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuSt != null">
+                #{cpuSt,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
+        update cpu_message
+        <set>
+            <if test="serverId != null">
+                server_id = #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="cpuUsed != null">
+                cpu_used = #{cpuUsed,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuTime != null">
+                cpu_time = #{cpuTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cpuUs != null">
+                cpu_us = #{cpuUs,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuSy != null">
+                cpu_sy = #{cpuSy,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuNi != null">
+                cpu_ni = #{cpuNi,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuWa != null">
+                cpu_wa = #{cpuWa,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuHi != null">
+                cpu_hi = #{cpuHi,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuSi != null">
+                cpu_si = #{cpuSi,jdbcType=VARCHAR},
+            </if>
+            <if test="cpuSt != null">
+                cpu_st = #{cpuSt,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where cpu_id = #{cpuId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage">
     update cpu_message
     set server_id = #{serverId,jdbcType=INTEGER},
       cpu_used = #{cpuUsed,jdbcType=VARCHAR},
-      cpu_time = #{cpuTime,jdbcType=TIMESTAMP}
+      cpu_time = #{cpuTime,jdbcType=TIMESTAMP},
+      cpu_us = #{cpuUs,jdbcType=VARCHAR},
+      cpu_sy = #{cpuSy,jdbcType=VARCHAR},
+      cpu_ni = #{cpuNi,jdbcType=VARCHAR},
+      cpu_wa = #{cpuWa,jdbcType=VARCHAR},
+      cpu_hi = #{cpuHi,jdbcType=VARCHAR},
+      cpu_si = #{cpuSi,jdbcType=VARCHAR},
+      cpu_st = #{cpuSt,jdbcType=VARCHAR}
     where cpu_id = #{cpuId,jdbcType=INTEGER}
   </update>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from cpu_message
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from cpu_message
+    </select>
+    <sql id="Select_Cond_Sql">
+        <trim prefix="where" suffixOverrides="and">
+            <if test="cpuId != null">
+                and cpu_id = #{cpuId, jdbcType=INTEGER}
+            </if>
+            <if test="serverId != null">
+                and server_id = #{serverId, jdbcType=INTEGER}
+            </if>
+            <if test="cpuUsed != null">
+                and cpu_used = #{cpuUsed, jdbcType=VARCHAR}
+            </if>
+            <if test="cpuTime != null">
+                and cpu_time = #{cpuTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="cpuUs != null">
+                and cpu_us = #{cpuUs, jdbcType=VARCHAR}
+            </if>
+            <if test="cpuSy != null">
+                and cpu_sy = #{cpuSy, jdbcType=VARCHAR}
+            </if>
+            <if test="cpuNi != null">
+                and cpu_ni = #{cpuNi, jdbcType=VARCHAR}
+            </if>
+            <if test="cpuWa != null">
+                and cpu_wa = #{cpuWa, jdbcType=VARCHAR}
+            </if>
+            <if test="cpuHi != null">
+                and cpu_hi = #{cpuHi, jdbcType=VARCHAR}
+            </if>
+            <if test="cpuSi != null">
+                and cpu_si = #{cpuSi, jdbcType=VARCHAR}
+            </if>
+            <if test="cpuSt != null">
+                and cpu_st = #{cpuSt, jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </sql>
+    <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage" resultMap="BaseResultMap">
+        select count(cpu_id) from cpu_message
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from cpu_message
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectRecentlyMessage" resultType="com.lightingsui.linuxwatcher.pojo.CpuMessage"
+            resultMap="BaseResultMap">
+    select * from cpu_message where server_id = #{param1} order by cpu_time DESC limit #{param2}
   </select>
-  <sql id="Select_Cond_Sql">
-    <trim prefix="where" suffixOverrides="and">
-      <if test="cpuId != null">
-        and cpu_id = #{cpuId, jdbcType=INTEGER}
-      </if>
-      <if test="serverId != null">
-        and server_id = #{serverId, jdbcType=INTEGER}
-      </if>
-      <if test="cpuUsed != null">
-        and cpu_used = #{cpuUsed, jdbcType=VARCHAR}
-      </if>
-      <if test="cpuTime != null">
-        and cpu_time = #{cpuTime, jdbcType=TIMESTAMP}
-      </if>
-    </trim>
-  </sql>
-  <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage" resultMap="BaseResultMap">
-    select count(cpu_id) from cpu_message
-    <include refid="Select_Cond_Sql" />
+    <select id="selectCpuStartTime" resultType="date">
+    select cpu_time from cpu_message where server_id = #{serverId} order by cpu_time ASC limit 1
   </select>
-  <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.CpuMessage" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from cpu_message
-    <include refid="Select_Cond_Sql" />
-  </select>
+    <select id="selectAssignMessage" resultType="com.lightingsui.linuxwatcher.pojo.CpuMessage" resultMap="BaseResultMap">
+        select * from cpu_message where server_id = #{param1}
+        and cpu_time between #{param1} and #{param2} order by cpu_time DESC
+    </select>
 </mapper>

@@ -1,8 +1,10 @@
 package com.lightingsui.linuxwatcher.mapper;
 
 import com.lightingsui.linuxwatcher.pojo.CpuMessage;
-import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.Date;
+import java.util.List;
 
 @Mapper
 public interface CpuMessageMapper {
@@ -23,4 +25,10 @@ public interface CpuMessageMapper {
     int selectCount(CpuMessage record);
 
     List<CpuMessage> selectByCond(CpuMessage record);
+
+    List<CpuMessage> selectRecentlyMessage(int serverId, int recentlyTime);
+
+    Date selectCpuStartTime(int serverId);
+
+    List<CpuMessage> selectAssignMessage(int serverId, String beginDate, String endDate);
 }

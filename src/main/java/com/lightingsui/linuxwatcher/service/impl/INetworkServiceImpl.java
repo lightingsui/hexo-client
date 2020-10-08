@@ -27,7 +27,7 @@ import java.util.List;
 @Service
 public class INetworkServiceImpl implements INetworkService {
     private final static String NOT_INSTALL_DSTAT = "not found";
-    public final static int RECENTLY_TIME = 8;
+    public final static int RECENTLY_TIME = 18;
 
     @Autowired
     private ServerMessageMapper serverMessageMapper;
@@ -84,7 +84,7 @@ public class INetworkServiceImpl implements INetworkService {
         }
         int serverId = serverMessageMapper.selectServerIdByHost(connect.getHost());
 
-        List<NetworkMessage> networkMessages = networkMessageMapper.selectRecentlyMessage(serverId, RECENTLY_TIME);
+        List<NetworkMessage> networkMessages = networkMessageMapper.selectRecentlyMessage(serverId, INetworkServiceImpl.RECENTLY_TIME);
 
         List<NetwrokMessageVo> res = new ArrayList<>(networkMessages.size());
 

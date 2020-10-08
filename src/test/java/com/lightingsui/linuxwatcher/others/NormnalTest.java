@@ -4,12 +4,14 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.lightingsui.linuxwatcher.command.LinuxCommand;
 import com.lightingsui.linuxwatcher.model.ServerMessage;
+import com.lightingsui.linuxwatcher.pojo.CpuMessage;
 import com.lightingsui.linuxwatcher.ssh.SSHControl;
 import com.lightingsui.linuxwatcher.ssh.SSHHelper;
 import com.lightingsui.linuxwatcher.utils.ConversionOfNumberSystems;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -233,6 +235,61 @@ public class NormnalTest {
 
         System.out.println(formatTotal);
         System.out.println(formatUsed);
+    }
+
+
+
+    @Test
+    public void test11() {
+        ServerMessage serverMessage = new ServerMessage();
+        serverMessage.setHost("172.21.18.202");
+        serverMessage.setPassword("suiroot");
+        serverMessage.setPort(22);
+
+        SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
+        sshHelper.getConnection();
+        String s = sshHelper.execCommand(LinuxCommand.PROCESS, SSHControl.UN_ENABLE_ENTER);
+
+        System.out.println(s);
+
+
+    }
+
+
+    @Test
+    public void test12() {
+        ServerMessage serverMessage = new ServerMessage();
+        serverMessage.setHost("172.21.18.202");
+        serverMessage.setPassword("suiroot");
+        serverMessage.setPort(22);
+
+        SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
+        sshHelper.getConnection();
+        String s = sshHelper.execCommand(LinuxCommand.CPU_MESSAGE, SSHControl.UN_ENABLE_ENTER);
+
+        Matcher matcher = Pattern.compile("\\d+[.]\\d+").matcher(s);
+
+        List<Float> tmp = new ArrayList<>();
+
+        while(matcher.find()) {
+            tmp.add(Float.parseFloat(matcher.group()));
+        }
+
+        float used = 100 - tmp.get(3);
+
+        CpuMessage cpuMessage = new CpuMessage();
+        cpuMessage.setCpuTime(new Date());
+        cpuMessage.setCpuUsed(String.format("%.2f", used));
+        cpuMessage.setCpuUs(String.valueOf(tmp.get(0)));
+        cpuMessage.setCpuSy(String.valueOf(tmp.get(1)));
+        cpuMessage.setCpuNi(String.valueOf(tmp.get(2)));
+        cpuMessage.setCpuWa(String.valueOf(tmp.get(4)));
+        cpuMessage.setCpuHi(String.valueOf(tmp.get(5)));
+        cpuMessage.setCpuSi(String.valueOf(tmp.get(6)));
+        cpuMessage.setCpuSt(String.valueOf(tmp.get(7)));
+
+
+        System.out.println();
     }
 
 }

@@ -16,6 +16,9 @@ public class LinuxCommand {
     public static final String HEXO_DEPLOY = "hexo d";
     public static final String CD = "cd";
 
+    /** 进程 */
+    public static final String PROCESS = "top -b -n 1 | tail -n +2 | head -n 1";
+
 
     /** 内存查看命令 */
     public static final String MEMORY_MESSAGE = "free -m | tail -n +2 | head -n 1";
@@ -25,6 +28,9 @@ public class LinuxCommand {
     public static final String HARD_DISK_TOTAL = "fdisk -l | grep Disk";
     public static final String HARD_DISK_USED = "df -lh | tail -n +2 | awk '{print $3}'";
     public static final String HARD_DISK_TOTAL_UPGRADE = "df -lh | tail -n +2 | awk '{print $2}'";
+
+    /** 查看CPU信息 */
+    public static final String CPU_MESSAGE = "top -b -n 1 | tail -n +3 | head -n 1";
 
 
     public static  final String SYSTEM_STARTUP_SECOND_TIME = "cat /proc/uptime | cut -d\" \" -f1";
@@ -36,4 +42,6 @@ public class LinuxCommand {
 
     public static final String CHECK_INSTALL_DSTAT = "dstat --version";
     public static final String GET_SYSTEM_NETWORK_SPEED = "dstat  1 2 |tail -n +5 | cut -d\"|\" -f 3";
+
+    public static final String LINUX_WELCOME_SPEECH = "cat /etc/motd";
 }

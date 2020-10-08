@@ -2,14 +2,8 @@ package com.lightingsui.linuxwatcher.config;
 
 import com.lightingsui.linuxwatcher.command.LinuxCommand;
 import com.lightingsui.linuxwatcher.exception.DatabaseException;
-import com.lightingsui.linuxwatcher.mapper.HardDiskMessageMapper;
-import com.lightingsui.linuxwatcher.mapper.MemoryMessageMapper;
-import com.lightingsui.linuxwatcher.mapper.NetworkMessageMapper;
-import com.lightingsui.linuxwatcher.mapper.ServerMessageMapper;
-import com.lightingsui.linuxwatcher.pojo.HardDiskMessage;
-import com.lightingsui.linuxwatcher.pojo.MemoryMessage;
-import com.lightingsui.linuxwatcher.pojo.NetworkMessage;
-import com.lightingsui.linuxwatcher.pojo.ServerMessage;
+import com.lightingsui.linuxwatcher.mapper.*;
+import com.lightingsui.linuxwatcher.pojo.*;
 import com.lightingsui.linuxwatcher.service.impl.IConnectServiceImpl;
 import com.lightingsui.linuxwatcher.ssh.SSHControl;
 import com.lightingsui.linuxwatcher.ssh.SSHHelper;
@@ -23,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 定时监测任务
@@ -33,11 +26,6 @@ import java.util.regex.Pattern;
  */
 @Component
 public class TaskSchedule {
-    public static Pattern compile;
-
-    static {
-        compile = Pattern.compile("\\d+(G|M|K|B)");
-    }
 
 
     public final Logger LOGGER = Logger.getLogger(TaskSchedule.class);
@@ -55,6 +43,8 @@ public class TaskSchedule {
     private MemoryMessageMapper memoryMessageMapper;
     @Autowired
     private HardDiskMessageMapper hardDiskMessageMapper;
+    @Autowired
+    private CpuMessageMapper cpuMessageMapper;
 
 
     @Scheduled(fixedDelay = RUN_INTERVAL)
@@ -65,9 +55,7 @@ public class TaskSchedule {
 
             once = false;
         } else {
-
-            System.out.println("我是定时任务" + System.currentTimeMillis());
-
+            LOGGER.info("开始收集数据");
             for (int i = 0; i < TASK.size(); i++) {
                 ServerMessage serverMessage = TASK.get(i);
                 SSHHelper sshHelper = new SSHHelper(serverMessage.getServerIp(), serverMessage.getServerPassword(),
@@ -82,11 +70,14 @@ public class TaskSchedule {
                             resolveNetwork(sshHelper, serverMessage);
                             resolveMemory(sshHelper, serverMessage);
                             resolveHardDisk(sshHelper, serverMessage);
+                            resolveCPU(sshHelper, serverMessage);
                         } catch (Exception e) {
                             LOGGER.error(e);
                             LOGGER.error("数据库异常，暂停一切定时任务");
                             ThreadPoolConfig.executor.shutdownNow();
                             e.printStackTrace();
+                        } finally {
+                            sshHelper.disConnect();
                         }
                     }
                 };
@@ -98,10 +89,11 @@ public class TaskSchedule {
 
     /**
      * 处理网络信息
-     * @param sshHelper 连接处理器
+     *
+     * @param sshHelper     连接处理器
      * @param serverMessage 当前服务器信息
      */
-    private void resolveNetwork(SSHHelper sshHelper, ServerMessage serverMessage){
+    private void resolveNetwork(SSHHelper sshHelper, ServerMessage serverMessage) {
         String s = sshHelper.execCommand(LinuxCommand.GET_SYSTEM_NETWORK_SPEED, SSHControl.ENABLE_ENTER);
 
         // 格式化命令输出
@@ -125,13 +117,14 @@ public class TaskSchedule {
 
         int effectCount = networkMessageMapper.insertSelective(networkMessage);
 
-        if(effectCount == IConnectServiceImpl.DATABASE_ERROR) {
+        if (effectCount == IConnectServiceImpl.DATABASE_ERROR) {
             throw new DatabaseException("数据库异常");
         }
     }
 
     /**
      * 处理内存信息
+     *
      * @param sshHelper
      * @param serverMessage
      */
@@ -140,17 +133,17 @@ public class TaskSchedule {
         String swapTotal = sshHelper.execCommand(LinuxCommand.MEMORY_MESSAGE_SWAP, SSHControl.UN_ENABLE_ENTER);
 
 
-        Matcher memoryTotalMatcher = IConnectServiceImpl.compile.matcher(memoryTotal);
+        Matcher memoryTotalMatcher = PatternConfig.compile.matcher(memoryTotal);
         List<Integer> totalList = new ArrayList<>();
 
-        while(memoryTotalMatcher.find()) {
+        while (memoryTotalMatcher.find()) {
             totalList.add(Integer.parseInt(memoryTotalMatcher.group()));
         }
 
-        Matcher swapMemoryTotalMatcher = IConnectServiceImpl.compile.matcher(swapTotal);
+        Matcher swapMemoryTotalMatcher = PatternConfig.compile.matcher(swapTotal);
         List<Integer> swapMemoryList = new ArrayList<>();
 
-        while(swapMemoryTotalMatcher.find()) {
+        while (swapMemoryTotalMatcher.find()) {
             swapMemoryList.add(Integer.parseInt(swapMemoryTotalMatcher.group()));
         }
 
@@ -165,7 +158,7 @@ public class TaskSchedule {
 
         int effectCount = memoryMessageMapper.insertSelective(memoryMessage);
 
-        if(effectCount == IConnectServiceImpl.DATABASE_ERROR) {
+        if (effectCount == IConnectServiceImpl.DATABASE_ERROR) {
             throw new DatabaseException("数据库异常");
         }
 
@@ -173,6 +166,7 @@ public class TaskSchedule {
 
     /**
      * 处理硬盘信息
+     *
      * @param sshHelper
      * @param serverMessage
      */
@@ -184,9 +178,9 @@ public class TaskSchedule {
         // 获取使用量
         List<Float> res = new ArrayList<>();
 
-        Matcher matcher = compile.matcher(hardDiskUsed);
+        Matcher matcher = PatternConfig.hardDiskCompile.matcher(hardDiskUsed);
 
-        while(matcher.find()) {
+        while (matcher.find()) {
             String group = matcher.group();
             Long tmp = ConversionOfNumberSystems.OtherToBytes(group);
             String GB = ConversionOfNumberSystems.byteConverseOther(tmp, ConversionOfNumberSystems.TO_GB, ConversionOfNumberSystems.UN_ENABLE_UNIT);
@@ -199,9 +193,9 @@ public class TaskSchedule {
 
         // 获取总量
         List<Float> resTotal = new ArrayList<>();
-        Matcher totalMatcher = compile.matcher(hardDiskTotal);
+        Matcher totalMatcher = PatternConfig.hardDiskCompile.matcher(hardDiskTotal);
 
-        while(totalMatcher.find()) {
+        while (totalMatcher.find()) {
             String group = totalMatcher.group();
             Long tmp = ConversionOfNumberSystems.OtherToBytes(group);
             String GB = ConversionOfNumberSystems.byteConverseOther(tmp, ConversionOfNumberSystems.TO_GB, ConversionOfNumberSystems.UN_ENABLE_UNIT);
@@ -218,11 +212,48 @@ public class TaskSchedule {
         hardDiskMessage.setServerId(serverMessage.getServerId());
         hardDiskMessage.setHardDiskTime(new Date());
         hardDiskMessage.setHardDiskUsed(formatUsed);
-        hardDiskMessage.setHardDiskUsable(String.format("%.2f",  total - used));
+        hardDiskMessage.setHardDiskUsable(String.format("%.2f", total - used));
 
         int effectCount = hardDiskMessageMapper.insertSelective(hardDiskMessage);
 
-        if(effectCount == IConnectServiceImpl.DATABASE_ERROR) {
+        if (effectCount == IConnectServiceImpl.DATABASE_ERROR) {
+            throw new DatabaseException("数据库异常");
+        }
+    }
+
+    /**
+     * 处理CPU信息
+     * @param sshHelper
+     * @param serverMessage
+     */
+    private void resolveCPU(SSHHelper sshHelper, ServerMessage serverMessage) {
+        String s = sshHelper.execCommand(LinuxCommand.CPU_MESSAGE, SSHControl.UN_ENABLE_ENTER);
+
+        Matcher matcher = PatternConfig.CPUCompile.matcher(s);
+
+        List<Float> tmp = new ArrayList<>();
+
+        while(matcher.find()) {
+            tmp.add(Float.parseFloat(matcher.group()));
+        }
+
+        float used = 100 - tmp.get(3);
+
+        CpuMessage cpuMessage = new CpuMessage();
+        cpuMessage.setCpuTime(new Date());
+        cpuMessage.setCpuUsed(String.format("%.2f", used));
+        cpuMessage.setCpuUs(String.valueOf(tmp.get(0)));
+        cpuMessage.setCpuSy(String.valueOf(tmp.get(1)));
+        cpuMessage.setCpuNi(String.valueOf(tmp.get(2)));
+        cpuMessage.setCpuWa(String.valueOf(tmp.get(4)));
+        cpuMessage.setCpuHi(String.valueOf(tmp.get(5)));
+        cpuMessage.setCpuSi(String.valueOf(tmp.get(6)));
+        cpuMessage.setCpuSt(String.valueOf(tmp.get(7)));
+        cpuMessage.setServerId(serverMessage.getServerId());
+
+        int effectCount = cpuMessageMapper.insertSelective(cpuMessage);
+
+        if (effectCount == IConnectServiceImpl.DATABASE_ERROR) {
             throw new DatabaseException("数据库异常");
         }
     }

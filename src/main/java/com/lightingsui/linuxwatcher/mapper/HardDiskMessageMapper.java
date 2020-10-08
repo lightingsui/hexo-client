@@ -1,8 +1,10 @@
 package com.lightingsui.linuxwatcher.mapper;
 
 import com.lightingsui.linuxwatcher.pojo.HardDiskMessage;
-import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.Date;
+import java.util.List;
 
 @Mapper
 public interface HardDiskMessageMapper {
@@ -23,4 +25,10 @@ public interface HardDiskMessageMapper {
     int selectCount(HardDiskMessage record);
 
     List<HardDiskMessage> selectByCond(HardDiskMessage record);
+
+    Date selectHardDiskStartTime(int serverId);
+
+    List<HardDiskMessage> selectRecentlyMessage(int serverId, int recentlyTime);
+
+    List<HardDiskMessage> selectAssignMessage(int serverId, String beginDate, String endDate);
 }

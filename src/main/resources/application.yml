@@ -3,7 +3,7 @@ server:
 spring:
   # redis
   redis:
-    host: 39.106.81.183
+    host: 172.21.18.202
     port: 6379
     jedis:
       pool:
@@ -48,5 +48,5 @@ mybatis-generator-repackaging:
     targetPackage: mapper
   # 表信息
   tables:
-    - hard_disk_message
+    - cpu_message
 
