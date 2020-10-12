@@ -28,4 +28,7 @@ public interface ServerMessageMapper {
     List<ServerMessage> selectAllOnlyServerId();
 
     int selectServerIdByHost(String host);
+
+    String selectUserHexoLocaltion(String host);
+
 }

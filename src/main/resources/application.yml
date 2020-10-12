@@ -48,5 +48,5 @@ mybatis-generator-repackaging:
     targetPackage: mapper
   # 表信息
   tables:
-    - cpu_message
+    - hexo
 

@@ -23,7 +23,7 @@ public interface IConnectService {
 
 
 
-    boolean uploadBlog(ServerMessage connect, String content, String fileName);
+
 
     CommonResult<ServerMessageVo> getServerMessage(ServerMessage connect);
 

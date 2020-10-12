@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +58,7 @@ public class ICPUServiceImpl implements ICPUService {
             res.add(cpuMessageVo);
         });
 
+        Collections.sort(res);
 
         return CommonResult.getSuccessInstance(res);
     }
@@ -118,6 +120,8 @@ public class ICPUServiceImpl implements ICPUService {
 
             res.add(cpuMessageVo);
         });
+
+        Collections.sort(res);
 
         return CommonResult.getSuccessInstance(res);
     }

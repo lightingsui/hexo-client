@@ -1,5 +1,6 @@
 package com.lightingsui.linuxwatcher.config;
 
+import com.jcraft.jsch.JSchException;
 import com.lightingsui.linuxwatcher.command.LinuxCommand;
 import com.lightingsui.linuxwatcher.exception.DatabaseException;
 import com.lightingsui.linuxwatcher.mapper.*;
@@ -8,6 +9,7 @@ import com.lightingsui.linuxwatcher.service.impl.IConnectServiceImpl;
 import com.lightingsui.linuxwatcher.ssh.SSHControl;
 import com.lightingsui.linuxwatcher.ssh.SSHHelper;
 import com.lightingsui.linuxwatcher.utils.ConversionOfNumberSystems;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -45,6 +47,8 @@ public class TaskSchedule {
     private HardDiskMessageMapper hardDiskMessageMapper;
     @Autowired
     private CpuMessageMapper cpuMessageMapper;
+    @Autowired
+    private LoadavgMessageMapper loadavgMessageMapper;
 
 
     @Scheduled(fixedDelay = RUN_INTERVAL)
@@ -56,14 +60,23 @@ public class TaskSchedule {
             once = false;
         } else {
             LOGGER.info("开始收集数据");
+
             for (int i = 0; i < TASK.size(); i++) {
                 ServerMessage serverMessage = TASK.get(i);
                 SSHHelper sshHelper = new SSHHelper(serverMessage.getServerIp(), serverMessage.getServerPassword(),
                         Integer.parseInt(serverMessage.getServerPort()));
 
-                sshHelper.getConnection();
+                try {
+                    sshHelper.getConnection();
+                } catch (JSchException e) {
+                    LOGGER.error(serverMessage.getServerIp() + "服务器连接异常，请及时处理");
+                    e.printStackTrace();
+                    continue;
+                }
 
+                LOGGER.info(serverMessage.getServerIp() + " 正在收集数据");
                 Runnable runnable = new Runnable() {
+
                     @Override
                     public void run() {
                         try {
@@ -71,18 +84,22 @@ public class TaskSchedule {
                             resolveMemory(sshHelper, serverMessage);
                             resolveHardDisk(sshHelper, serverMessage);
                             resolveCPU(sshHelper, serverMessage);
-                        } catch (Exception e) {
+                            resolveLoadavg(sshHelper, serverMessage);
+                        } catch (DatabaseException e) {
                             LOGGER.error(e);
                             LOGGER.error("数据库异常，暂停一切定时任务");
                             ThreadPoolConfig.executor.shutdownNow();
                             e.printStackTrace();
-                        } finally {
+                        }  finally {
+                            LOGGER.info(serverMessage.getServerIp() + " 数据收集结束");
                             sshHelper.disConnect();
                         }
                     }
                 };
 
                 ThreadPoolConfig.executor.execute(runnable);
+
+
             }
         }
     }
@@ -94,6 +111,18 @@ public class TaskSchedule {
      * @param serverMessage 当前服务器信息
      */
     private void resolveNetwork(SSHHelper sshHelper, ServerMessage serverMessage) {
+        try {
+            String dstatCheck = sshHelper.execCommand(LinuxCommand.CHECK_INSTALL_DSTAT, SSHControl.UN_ENABLE_ENTER);
+
+            if(StringUtils.isBlank(dstatCheck)) {
+                LOGGER.error(serverMessage.getServerIp() + "not install dstat");
+                return;
+            }
+        } catch (DatabaseException e) {
+            LOGGER.error(serverMessage.getServerIp() + "not install dstat");
+//            e.printStackTrace();
+            return;
+        }
         String s = sshHelper.execCommand(LinuxCommand.GET_SYSTEM_NETWORK_SPEED, SSHControl.ENABLE_ENTER);
 
         // 格式化命令输出
@@ -252,6 +281,29 @@ public class TaskSchedule {
         cpuMessage.setServerId(serverMessage.getServerId());
 
         int effectCount = cpuMessageMapper.insertSelective(cpuMessage);
+
+        if (effectCount == IConnectServiceImpl.DATABASE_ERROR) {
+            throw new DatabaseException("数据库异常");
+        }
+    }
+
+    /**
+     * 处理负载信息
+     * @param sshHelper
+     * @param serverMessage
+     */
+    private void resolveLoadavg(SSHHelper sshHelper, ServerMessage serverMessage) {
+        String commandResult = sshHelper.execCommand(LinuxCommand.LOADAVG, SSHControl.UN_ENABLE_ENTER);
+        String[] commands = commandResult.split(" ");
+
+        LoadavgMessage loadavgMessage = new LoadavgMessage();
+        loadavgMessage.setServerId(serverMessage.getServerId());
+        loadavgMessage.setLoadavgTime(new Date());
+        loadavgMessage.setLoadavgOne(commands[0]);
+        loadavgMessage.setLoadavgFive(commands[1]);
+        loadavgMessage.setLoadavgFifteen(commands[2]);
+
+        int effectCount = loadavgMessageMapper.insertSelective(loadavgMessage);
 
         if (effectCount == IConnectServiceImpl.DATABASE_ERROR) {
             throw new DatabaseException("数据库异常");

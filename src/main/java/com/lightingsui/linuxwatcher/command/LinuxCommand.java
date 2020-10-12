@@ -10,11 +10,11 @@ public class LinuxCommand {
     public static final String TEST_CONNECT_COMMAND = "whoami";
     public static final String DEFAULT_USER = "root";
     public static final String UNAME = "uname -a";
-    public static final String HEXO_CHECK = "hexo";
+    public static final String HEXO_CHECK = "hexo -d";
     public static final String HEXO_NEW_PAGE = "hexo new";
     public static final String HEXO_GENERATE_PAGE = "hexo g";
     public static final String HEXO_DEPLOY = "hexo d";
-    public static final String CD = "cd";
+    public static final String CD = "cd ";
 
     /** 进程 */
     public static final String PROCESS = "top -b -n 1 | tail -n +2 | head -n 1";
@@ -32,6 +32,9 @@ public class LinuxCommand {
     /** 查看CPU信息 */
     public static final String CPU_MESSAGE = "top -b -n 1 | tail -n +3 | head -n 1";
 
+    /** 查看负载信息 */
+    public static final String LOADAVG = "cat /proc/loadavg | cut -d\" \" -f1-3";
+
 
     public static  final String SYSTEM_STARTUP_SECOND_TIME = "cat /proc/uptime | cut -d\" \" -f1";
 
@@ -44,4 +47,10 @@ public class LinuxCommand {
     public static final String GET_SYSTEM_NETWORK_SPEED = "dstat  1 2 |tail -n +5 | cut -d\"|\" -f 3";
 
     public static final String LINUX_WELCOME_SPEECH = "cat /etc/motd";
+
+
+
+    public static class LinuxCommandSeparator {
+        public static final String PARALLEL = " && ";
+    }
 }

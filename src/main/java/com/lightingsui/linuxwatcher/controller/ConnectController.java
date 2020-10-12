@@ -3,7 +3,6 @@ package com.lightingsui.linuxwatcher.controller;
 import com.lightingsui.linuxwatcher.common.CommonResult;
 import com.lightingsui.linuxwatcher.model.ServerMessage;
 import com.lightingsui.linuxwatcher.model.ServerMessageUname;
-import com.lightingsui.linuxwatcher.model.UpLoadContent;
 import com.lightingsui.linuxwatcher.service.IConnectService;
 import com.lightingsui.linuxwatcher.vo.LastLoginMessageVo;
 import com.lightingsui.linuxwatcher.vo.ServerMessageVo;
@@ -11,7 +10,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -74,6 +72,8 @@ public class ConnectController {
 
 
 
+
+
 //    @ApiOperation("获取服务器信息")
 //    @RequestMapping(value = "server-message", method = RequestMethod.GET)
 //    public CommonResult<ServerMessageUname> getServerMessageUname(HttpServletRequest request) {
@@ -93,12 +93,7 @@ public class ConnectController {
 
 
 
-    @ApiOperation("上传博客")
-    @RequestMapping(value = "upload-blog", method = RequestMethod.POST)
-    public CommonResult<Boolean> uploadBlog(@RequestBody UpLoadContent upLoadContent, HttpServletRequest request) {
-        return connectService.uploadBlog((ServerMessage)request.getSession().getAttribute("connect"), upLoadContent.getContent(), upLoadContent.getFileName()) ?
-                CommonResult.getSuccessInstance(true) : CommonResult.getErrorInstance("上传失败");
-    }
+
 
 
 }

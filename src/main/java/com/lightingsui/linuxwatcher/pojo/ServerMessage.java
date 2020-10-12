@@ -1,5 +1,6 @@
 package com.lightingsui.linuxwatcher.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -20,6 +21,7 @@ public class ServerMessage {
     private String serverName;
 
     @ApiModelProperty("服务器创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private String serverCreateTime;
 
     @ApiModelProperty("上次登录时间")

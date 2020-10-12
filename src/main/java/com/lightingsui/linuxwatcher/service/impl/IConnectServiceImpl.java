@@ -1,7 +1,9 @@
 package com.lightingsui.linuxwatcher.service.impl;
 
+import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import com.jcraft.jsch.JSchException;
 import com.lightingsui.linuxwatcher.command.LinuxCommand;
 import com.lightingsui.linuxwatcher.common.CommonResult;
 import com.lightingsui.linuxwatcher.common.ErrorResponseCode;
@@ -9,9 +11,11 @@ import com.lightingsui.linuxwatcher.common.SuccessResponseCode;
 import com.lightingsui.linuxwatcher.config.LogConfig;
 import com.lightingsui.linuxwatcher.config.PatternConfig;
 import com.lightingsui.linuxwatcher.config.TaskSchedule;
+import com.lightingsui.linuxwatcher.mapper.HexoMapper;
 import com.lightingsui.linuxwatcher.mapper.ServerMessageMapper;
 import com.lightingsui.linuxwatcher.model.ServerMessage;
 import com.lightingsui.linuxwatcher.model.ServerMessageUname;
+import com.lightingsui.linuxwatcher.pojo.Hexo;
 import com.lightingsui.linuxwatcher.service.IConnectService;
 import com.lightingsui.linuxwatcher.ssh.SSHHelper;
 import com.lightingsui.linuxwatcher.utils.ConversionOfNumberSystems;
@@ -25,9 +29,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -41,13 +45,18 @@ public class IConnectServiceImpl implements IConnectService {
     @Autowired
     private ServerMessageMapper serverMessageMapper;
     @Autowired
+    private HexoMapper hexoMapper;
+    @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
 
     public final String COMMAND_RUN_FAILED = "";
     public final String HEXO_COMMAND_NOT_FOUND = "-bash: hexo: command not found";
     public final String NOT_HEXO_FOLDER = "Usage: hexo <command>";
-    public final String HEXO_SUB_CONTENT = "/source/_posts/";
+
+
+    private final String hexoTemplate = "---\\n" + "title: {{title}}\\n" + "date: {{date}}\\n"
+            + "tags: \\n" + "categories: \\n" + "---";
 
     public static final int DATABASE_ERROR = 0;
 
@@ -66,10 +75,17 @@ public class IConnectServiceImpl implements IConnectService {
 
         // 进行连接并且使用 whoami 进行验证
         SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getUser(), serverMessage.getPassword(), serverMessage.getPort());
-        boolean connection = sshHelper.getConnection();
+        boolean connection = false;
+        try {
+            connection = sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+            return CommonResult.getErrorInstance(ErrorResponseCode.SERVICE_CONNECT_FAILED);
+        }
 
         if (connection) {
             String res = sshHelper.execCommand(LinuxCommand.TEST_CONNECT_COMMAND, false);
+
 
             if (COMMAND_RUN_FAILED.equals(res)) {
                 return CommonResult.getErrorInstance(ErrorResponseCode.LOGIN_FAILED);
@@ -77,6 +93,7 @@ public class IConnectServiceImpl implements IConnectService {
 
             if (LinuxCommand.DEFAULT_USER.equals(res)) {
                 ServerMessageUname systemMessage = getSystemMessage(sshHelper);
+                sshHelper.disConnect();
 
                 if (serverMessage == null) {
                     return CommonResult.getErrorInstance(ErrorResponseCode.UNAME_GET_ERROR);
@@ -113,17 +130,34 @@ public class IConnectServiceImpl implements IConnectService {
                         return CommonResult.getErrorInstance(ErrorResponseCode.DATABASE_ERROR);
                     }
 
-                    // TODO: 插入信息
+                    Hexo hexo = new Hexo();
+
+                    hexo.setServerId(saveToDb.getServerId());
+
+
+
+                    hexo.setHexoTemplate(hexoTemplate);
+
+                    effectCount = hexoMapper.insertSelective(hexo);
+
+                    if (effectCount == DATABASE_ERROR) {
+                        return CommonResult.getErrorInstance(ErrorResponseCode.DATABASE_ERROR);
+                    }
+
                     // 加入到定时任务中
                     com.lightingsui.linuxwatcher.pojo.ServerMessage taskServerMessage = new com.lightingsui.linuxwatcher.pojo.ServerMessage();
                     taskServerMessage.setServerPort(String.valueOf(serverMessage.getPort()));
                     taskServerMessage.setServerPassword(serverMessage.getPassword());
                     taskServerMessage.setServerIp(serverMessage.getHost());
-                    TaskSchedule.TASK.add(taskServerMessage);
+                    taskServerMessage.setServerId(saveToDb.getServerId());
+                    synchronized (TaskSchedule.class) {
+                        TaskSchedule.TASK.add(taskServerMessage);
+                    }
                 }
 
                 // > 连接成功存进 session
                 request.getSession().setAttribute("connect", serverMessage);
+
 
                 return CommonResult.getSuccessInstance(SuccessResponseCode.LOGIN_SUCCESS, true);
             } else {
@@ -147,7 +181,12 @@ public class IConnectServiceImpl implements IConnectService {
 
         // 使用多线程查询信息
         SSHHelper sshHelper = new SSHHelper(connect.getHost(), connect.getPassword());
-        sshHelper.getConnection();
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+            return CommonResult.getErrorInstance(ErrorResponseCode.SERVICE_CONNECT_FAILED);
+        }
         ServerMessageVo serverMessage = new ServerMessageVo();
 
         // 使用redis 查询内存硬盘信息
@@ -199,6 +238,7 @@ public class IConnectServiceImpl implements IConnectService {
             e.printStackTrace();
         }
 
+        sshHelper.disConnect();
         return CommonResult.getSuccessInstance(serverMessage);
     }
 
@@ -245,7 +285,6 @@ public class IConnectServiceImpl implements IConnectService {
      */
     private boolean getHardDiskTotal(SSHHelper sshHelper, ServerMessageVo serverMessage) {
         String commandResult = sshHelper.execCommand(LinuxCommand.HARD_DISK_TOTAL, false);
-
         if (COMMAND_RUN_FAILED.equals(commandResult)) {
             return false;
         }
@@ -272,14 +311,13 @@ public class IConnectServiceImpl implements IConnectService {
      */
     private boolean getSystemStartUpMessage(SSHHelper sshHelper, ServerMessageVo serverMessage) {
         String commandResult = sshHelper.execCommand(LinuxCommand.SYSTEM_STARTUP_SECOND_TIME, false);
-
         if (COMMAND_RUN_FAILED.equals(commandResult)) {
             return false;
         }
 
         int round = Math.round(Float.parseFloat(commandResult));
         DateTime dateTime = DateUtil.offsetSecond(DateUtil.date(), -round);
-        String intervalTime = DateUtil.formatBetween(round * 1000);
+        String intervalTime = DateUtil.formatBetween(dateTime, DateUtil.date(), BetweenFormater.Level.SECOND);
 
         serverMessage.setStartUpTime(dateTime.toString());
         serverMessage.setRunTime(intervalTime);
@@ -316,7 +354,6 @@ public class IConnectServiceImpl implements IConnectService {
      */
     private boolean getProcessMessage(SSHHelper sshHelper, ServerMessageVo serverMessage) {
         String commandResult = sshHelper.execCommand(LinuxCommand.PROCESS, false);
-
         if (COMMAND_RUN_FAILED.equals(commandResult)) {
             return false;
         }
@@ -345,7 +382,6 @@ public class IConnectServiceImpl implements IConnectService {
      */
     private ServerMessageUname getSystemMessage(SSHHelper sshHelper) {
         String commandResult = sshHelper.execCommand(LinuxCommand.UNAME, false);
-
         if (COMMAND_RUN_FAILED.equals(commandResult)) {
             return null;
         }
@@ -396,10 +432,15 @@ public class IConnectServiceImpl implements IConnectService {
 
         // 使用多线程查询信息
         SSHHelper sshHelper = new SSHHelper(connect.getHost(), connect.getPassword());
-        sshHelper.getConnection();
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+            return CommonResult.getErrorInstance(ErrorResponseCode.SERVICE_CONNECT_FAILED);
+        }
 
         String commandResult = sshHelper.execCommand(LinuxCommand.LINUX_WELCOME_SPEECH, false);
-
+        sshHelper.disConnect();
         if (COMMAND_RUN_FAILED.equals(commandResult)) {
             return null;
         }
@@ -414,7 +455,13 @@ public class IConnectServiceImpl implements IConnectService {
         }
 
         SSHHelper sshHelper = new SSHHelper(connect.getHost(), connect.getUser(), connect.getPassword(), connect.getPort());
-        boolean connection = sshHelper.getConnection();
+        boolean connection = false;
+        try {
+            connection = sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+            return CommonResult.getErrorInstance(ErrorResponseCode.SERVICE_CONNECT_FAILED);
+        }
 
         if (connection) {
             String res = sshHelper.execCommand(LinuxCommand.UNAME, false);
@@ -432,73 +479,12 @@ public class IConnectServiceImpl implements IConnectService {
         return null;
     }
 
-    @Override
-    public boolean uploadBlog(ServerMessage connect, String content, String fileName) {
-        // 文件内容转码
-        String contentAfterDecode = null;
-        try {
-            contentAfterDecode = URLDecoder.decode(content, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            LogConfig.log("文本内容转码失败", LogConfig.ERROR);
-            e.printStackTrace();
-            return false;
-        }
-        final String blogContent = contentAfterDecode;
-
-        // 连接处理
-        SSHHelper sshHelper = new SSHHelper(connect.getHost(), connect.getUser(), connect.getPassword(), connect.getPort());
-        boolean connection = sshHelper.getConnection();
-
-        if (connection) {
 
 
-            // 检查是否安装了hexo
-            String hexoCheck = sshHelper.execCommand(LinuxCommand.HEXO_CHECK, false);
 
-            if (HEXO_COMMAND_NOT_FOUND.equals(hexoCheck)) {
-                LogConfig.log("此服务器没有安装 hexo", LogConfig.ERROR);
-                return false;
-            }
-
-
-            // 执行 hexo new
-            String hexoNewPage = sshHelper.execCommand(LinuxCommand.CD + " " + connect.getPath() + "&&" + LinuxCommand.HEXO_NEW_PAGE + " " + fileName, false);
-            if (hexoNewPage.startsWith(NOT_HEXO_FOLDER)) {
-                LogConfig.log("指定 hexo 文件夹非 hexo 安装文件夹", LogConfig.ERROR);
-                return false;
-            }
-
-            // 写入数据
-            boolean result = sshHelper.remoteEdit(connect.getPath() + HEXO_SUB_CONTENT + fileName + ".md", (inputLines) -> {
-                String outputLines = new String(blogContent);
-                return outputLines;
-            });
-
-            // 写入失败
-            if (!result) {
-                LogConfig.log("写入博客内容失败，当前hexo地址: " + connect.getPath() + " 文件名称：" + fileName, LogConfig.ERROR);
-                return result;
-            }
-
-
-            // 安装了hexo则进行 hexo -g
-            String generator = sshHelper.execCommand(LinuxCommand.CD + " " + connect.getPath() + " && " + LinuxCommand.HEXO_GENERATE_PAGE, false);
-
-
-            // 执行hexo -d
-            String deploy = sshHelper.execCommand(LinuxCommand.CD + " " + connect.getPath() + " && " + LinuxCommand.HEXO_DEPLOY, false);
-
-
-            return true;
-        }
-
-        LogConfig.log("上传博客时，连接失败", LogConfig.ERROR);
-
-        return false;
-    }
-
-
-    /** 五种信息采集内部类 */
+    /**
+     * 五种信息采集内部类
+     */
     private class MemoryThread extends Thread {
         private CountDownLatch countDownLatch;
         private SSHHelper sshHelper;

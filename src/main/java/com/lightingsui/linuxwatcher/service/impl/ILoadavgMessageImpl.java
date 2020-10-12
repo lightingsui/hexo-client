@@ -4,12 +4,12 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.lightingsui.linuxwatcher.common.CommonResult;
 import com.lightingsui.linuxwatcher.common.ErrorResponseCode;
-import com.lightingsui.linuxwatcher.mapper.HardDiskMessageMapper;
+import com.lightingsui.linuxwatcher.mapper.LoadavgMessageMapper;
 import com.lightingsui.linuxwatcher.mapper.ServerMessageMapper;
 import com.lightingsui.linuxwatcher.model.ServerMessage;
-import com.lightingsui.linuxwatcher.pojo.HardDiskMessage;
-import com.lightingsui.linuxwatcher.service.IHardDiskService;
-import com.lightingsui.linuxwatcher.vo.HardDiskMessageVo;
+import com.lightingsui.linuxwatcher.pojo.LoadavgMessage;
+import com.lightingsui.linuxwatcher.service.ILoadavgMessage;
+import com.lightingsui.linuxwatcher.vo.LoadavgMessageVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,27 +21,26 @@ import java.util.List;
 
 /**
  * @author ：隋亮亮
- * @since ：2020/10/7 8:52
+ * @since ：2020/10/9 7:48
  */
 @Service
-public class IHardDiskServiceImpl implements IHardDiskService {
+public class ILoadavgMessageImpl implements ILoadavgMessage {
     @Autowired
     private ServerMessageMapper serverMessageMapper;
     @Autowired
-    private HardDiskMessageMapper hardDiskMessageMapper;
-
+    private LoadavgMessageMapper loadavgMessageMapper;
 
     @Override
-    public CommonResult<String> getHardDiskStartTime(ServerMessage connect) {
-        if (connect == null) {
+    public CommonResult<String> getLoadavgStartTime(ServerMessage connect) {
+        if(connect == null) {
             return CommonResult.getErrorInstance(ErrorResponseCode.LOGIN_FAILED_UPDATE);
         }
 
         int serverId = serverMessageMapper.selectServerIdByHost(connect.getHost());
 
-        Date date = hardDiskMessageMapper.selectHardDiskStartTime(serverId);
+        Date date = loadavgMessageMapper.selectLoadavgStartTime(serverId);
 
-        if (date == null) {
+        if(date == null) {
             return CommonResult.getErrorInstance(ErrorResponseCode.CURRENT_SERVER_NOT_HAVE_START_MESSAGE);
         }
 
@@ -49,23 +48,24 @@ public class IHardDiskServiceImpl implements IHardDiskService {
     }
 
     @Override
-    public CommonResult<List<HardDiskMessageVo>> getRecentlyHardDiskMessage(ServerMessage connect) {
+    public CommonResult<List<LoadavgMessageVo>> getRecentlyLoadavgMessage(ServerMessage connect) {
         if(connect == null) {
             return CommonResult.getErrorInstance(ErrorResponseCode.LOGIN_FAILED_UPDATE);
         }
         int serverId = serverMessageMapper.selectServerIdByHost(connect.getHost());
 
-        List<HardDiskMessage> hardDiskMessages = hardDiskMessageMapper.selectRecentlyMessage(serverId, INetworkServiceImpl.RECENTLY_TIME);
+        List<LoadavgMessage> loadavgMessages = loadavgMessageMapper.selectRecentlyMessage(serverId, INetworkServiceImpl.RECENTLY_TIME);
 
-        List<HardDiskMessageVo> res = new ArrayList<>(hardDiskMessages.size());
+        List<LoadavgMessageVo> res = new ArrayList<>(loadavgMessages.size());
 
-        hardDiskMessages.forEach(ele -> {
-            HardDiskMessageVo hardDiskMessageVo = new HardDiskMessageVo();
-            hardDiskMessageVo.setUsed(ele.getHardDiskUsed());
-            hardDiskMessageVo.setUsabled(ele.getHardDiskUsable());
-            hardDiskMessageVo.setTime(ele.getHardDiskTime());
+        loadavgMessages.forEach(ele -> {
+            LoadavgMessageVo loadavgMessageVo = new LoadavgMessageVo();
+            loadavgMessageVo.setLoadavgOne(ele.getLoadavgOne());
+            loadavgMessageVo.setLoadavgFive(ele.getLoadavgFive());
+            loadavgMessageVo.setLoadavgFifteen(ele.getLoadavgFifteen());
+            loadavgMessageVo.setTime(ele.getLoadavgTime());
 
-            res.add(hardDiskMessageVo);
+            res.add(loadavgMessageVo);
         });
 
         Collections.sort(res);
@@ -74,7 +74,7 @@ public class IHardDiskServiceImpl implements IHardDiskService {
     }
 
     @Override
-    public CommonResult<List<HardDiskMessageVo>> getAssignDateHardDiskMessage(String beginDate, String endDate, ServerMessage connect) {
+    public CommonResult<List<LoadavgMessageVo>> getAssignDateLoadavgMessage(String beginDate, String endDate, ServerMessage connect) {
         // 登录验证
         if(connect == null) {
             return CommonResult.getErrorInstance(ErrorResponseCode.LOGIN_FAILED_UPDATE);
@@ -90,22 +90,24 @@ public class IHardDiskServiceImpl implements IHardDiskService {
         DateTime parseEndDate = DateUtil.parse(endDate, "yyyy-MM-dd HH:mm:ss");
 
         if(DateUtil.compare(parseBeginDate, parseEndDate) > IMemoryServiceImpl.BEGIN_DATE_EQUALS_END_DATE) {
+            // 开始时间必须小于结束时间
             return CommonResult.getErrorInstance(ErrorResponseCode.BEGIN_MUST_LT_END);
         }
 
         int serverId = serverMessageMapper.selectServerIdByHost(connect.getHost());
 
-        List<HardDiskMessage> hardDiskMessages = hardDiskMessageMapper.selectAssignMessage(serverId, beginDate, endDate);
+        List<LoadavgMessage> loadavgMessages = loadavgMessageMapper.selectAssignMessage(serverId, beginDate, endDate);
 
-        List<HardDiskMessageVo> res = new ArrayList<>(hardDiskMessages.size());
+        List<LoadavgMessageVo> res = new ArrayList<>(loadavgMessages.size());
 
-        hardDiskMessages.forEach(ele -> {
-            HardDiskMessageVo hardDiskMessageVo = new HardDiskMessageVo();
-            hardDiskMessageVo.setUsed(ele.getHardDiskUsed());
-            hardDiskMessageVo.setUsabled(ele.getHardDiskUsable());
-            hardDiskMessageVo.setTime(ele.getHardDiskTime());
+        loadavgMessages.forEach(ele -> {
+            LoadavgMessageVo loadavgMessageVo = new LoadavgMessageVo();
+            loadavgMessageVo.setLoadavgOne(ele.getLoadavgOne());
+            loadavgMessageVo.setLoadavgFive(ele.getLoadavgFive());
+            loadavgMessageVo.setLoadavgFifteen(ele.getLoadavgFifteen());
+            loadavgMessageVo.setTime(ele.getLoadavgTime());
 
-            res.add(hardDiskMessageVo);
+            res.add(loadavgMessageVo);
         });
 
         Collections.sort(res);

@@ -1,8 +1,10 @@
 package com.lightingsui.linuxwatcher.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Date;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * Table Name: network_message
@@ -22,6 +24,7 @@ public class NetworkMessage {
     private String networkInSpeed;
 
     @ApiModelProperty("当前时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date networkTime;
 
     @ApiModelProperty("最大出网速度")

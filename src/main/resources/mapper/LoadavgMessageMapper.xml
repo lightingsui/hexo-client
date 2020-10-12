@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lightingsui.linuxwatcher.mapper.LoadavgMessageMapper">
+    <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.LoadavgMessage">
+        <id column="loadavg_id" jdbcType="INTEGER" property="loadavgId"/>
+        <result column="server_id" jdbcType="INTEGER" property="serverId"/>
+        <result column="loadavg_time" jdbcType="TIMESTAMP" property="loadavgTime"/>
+        <result column="loadavg_one" jdbcType="VARCHAR" property="loadavgOne"/>
+        <result column="loadavg_five" jdbcType="VARCHAR" property="loadavgFive"/>
+        <result column="loadavg_fifteen" jdbcType="VARCHAR" property="loadavgFifteen"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    loadavg_id, server_id, loadavg_time, loadavg_one, loadavg_five, loadavg_fifteen
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loadavg_message
+        where loadavg_id = #{loadavgId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from loadavg_message
+    where loadavg_id = #{loadavgId,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.LoadavgMessage">
+    insert into loadavg_message (loadavg_id, server_id, loadavg_time, 
+      loadavg_one, loadavg_five, loadavg_fifteen
+      )
+    values (#{loadavgId,jdbcType=INTEGER}, #{serverId,jdbcType=INTEGER}, #{loadavgTime,jdbcType=TIMESTAMP}, 
+      #{loadavgOne,jdbcType=VARCHAR}, #{loadavgFive,jdbcType=VARCHAR}, #{loadavgFifteen,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.LoadavgMessage">
+        insert into loadavg_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="loadavgId != null">
+                loadavg_id,
+            </if>
+            <if test="serverId != null">
+                server_id,
+            </if>
+            <if test="loadavgTime != null">
+                loadavg_time,
+            </if>
+            <if test="loadavgOne != null">
+                loadavg_one,
+            </if>
+            <if test="loadavgFive != null">
+                loadavg_five,
+            </if>
+            <if test="loadavgFifteen != null">
+                loadavg_fifteen,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="loadavgId != null">
+                #{loadavgId,jdbcType=INTEGER},
+            </if>
+            <if test="serverId != null">
+                #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="loadavgTime != null">
+                #{loadavgTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="loadavgOne != null">
+                #{loadavgOne,jdbcType=VARCHAR},
+            </if>
+            <if test="loadavgFive != null">
+                #{loadavgFive,jdbcType=VARCHAR},
+            </if>
+            <if test="loadavgFifteen != null">
+                #{loadavgFifteen,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.LoadavgMessage">
+        update loadavg_message
+        <set>
+            <if test="serverId != null">
+                server_id = #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="loadavgTime != null">
+                loadavg_time = #{loadavgTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="loadavgOne != null">
+                loadavg_one = #{loadavgOne,jdbcType=VARCHAR},
+            </if>
+            <if test="loadavgFive != null">
+                loadavg_five = #{loadavgFive,jdbcType=VARCHAR},
+            </if>
+            <if test="loadavgFifteen != null">
+                loadavg_fifteen = #{loadavgFifteen,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where loadavg_id = #{loadavgId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.LoadavgMessage">
+    update loadavg_message
+    set server_id = #{serverId,jdbcType=INTEGER},
+      loadavg_time = #{loadavgTime,jdbcType=TIMESTAMP},
+      loadavg_one = #{loadavgOne,jdbcType=VARCHAR},
+      loadavg_five = #{loadavgFive,jdbcType=VARCHAR},
+      loadavg_fifteen = #{loadavgFifteen,jdbcType=VARCHAR}
+    where loadavg_id = #{loadavgId,jdbcType=INTEGER}
+  </update>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loadavg_message
+    </select>
+    <sql id="Select_Cond_Sql">
+        <trim prefix="where" suffixOverrides="and">
+            <if test="loadavgId != null">
+                and loadavg_id = #{loadavgId, jdbcType=INTEGER}
+            </if>
+            <if test="serverId != null">
+                and server_id = #{serverId, jdbcType=INTEGER}
+            </if>
+            <if test="loadavgTime != null">
+                and loadavg_time = #{loadavgTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="loadavgOne != null">
+                and loadavg_one = #{loadavgOne, jdbcType=VARCHAR}
+            </if>
+            <if test="loadavgFive != null">
+                and loadavg_five = #{loadavgFive, jdbcType=VARCHAR}
+            </if>
+            <if test="loadavgFifteen != null">
+                and loadavg_fifteen = #{loadavgFifteen, jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </sql>
+    <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.LoadavgMessage" resultMap="BaseResultMap">
+        select count(loadavg_id) from loadavg_message
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.LoadavgMessage"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loadavg_message
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectLoadavgStartTime" resultType="date">
+        SELECT
+            loadavg_time
+        FROM
+            loadavg_message
+        WHERE
+            server_id = #{serverId}
+        ORDER BY
+            loadavg_time ASC
+            LIMIT 1
+    </select>
+    <select id="selectRecentlyMessage" resultType="com.lightingsui.linuxwatcher.pojo.LoadavgMessage" resultMap="BaseResultMap">
+        SELECT
+            loadavg_time, loadavg_one, loadavg_five, loadavg_fifteen
+        FROM
+            loadavg_message
+        WHERE
+            server_id = #{param1}
+        ORDER BY
+            loadavg_time DESC
+            LIMIT #{param2}
+    </select>
+    <select id="selectAssignMessage" resultType="com.lightingsui.linuxwatcher.pojo.LoadavgMessage" resultMap="BaseResultMap">
+        SELECT
+            loadavg_time, loadavg_one, loadavg_five, loadavg_fifteen
+        FROM
+            loadavg_message
+        WHERE
+            server_id = #{param1}
+            AND loadavg_time BETWEEN #{param2}
+            AND #{param3}
+        ORDER BY
+            loadavg_time DESC
+    </select>
+</mapper>

@@ -24,6 +24,16 @@ public enum ErrorResponseCode implements IErrorCode {
     CURRENT_SERVER_NOT_HAVE_START_MESSAGE("500", "当前服务器没有第一次启动信息"),
     ERROR_BEGIN_END_DATE("500", "请提供开始时间和结束时间"),
     BEGIN_MUST_LT_END("500", "开始时间必须小于结束时间"),
+    SERVICE_CONNECT_FAILED("500", "服务器连接异常"),
+
+
+
+    /** blog */
+    HEXO_FOLDER_MUST_BE_PROVIDED("500", "请提供hexo文件位置"),
+    HEXO_FOLDER_CHECK_FAILED("500", "hexo文件夹位置不正确"),
+    HEXO_TEMPLATE_CHECK_FAILED("500", "hexo模板不能为空"),
+    URL_DECODE_FAILED("500", "url解码失败"),
+    WRITE_SERVER_BLOG_FAILED("500", "写入服务器内容失败"),
     ;
 
 

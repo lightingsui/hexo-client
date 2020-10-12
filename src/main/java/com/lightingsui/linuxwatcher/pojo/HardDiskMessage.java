@@ -1,8 +1,10 @@
 package com.lightingsui.linuxwatcher.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Date;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * Table Name: hard_disk_message
@@ -19,6 +21,7 @@ public class HardDiskMessage {
     private String hardDiskUsed;
 
     @ApiModelProperty("当前时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date hardDiskTime;
 
     private String hardDiskUsable;

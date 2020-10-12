@@ -7,23 +7,26 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * Table Name: memory_message
+ * Table Name: loadavg_message
  */
 @Data
-public class MemoryMessage {
-    @ApiModelProperty("内存信息id")
-    private Integer memoryId;
+public class LoadavgMessage {
+    @ApiModelProperty("主键")
+    private Integer loadavgId;
 
     @ApiModelProperty("服务器id")
     private Integer serverId;
 
-    @ApiModelProperty("内存使用情况")
-    private String memoryUsed;
-
     @ApiModelProperty("当前时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date memoryTime;
+    private Date loadavgTime;
 
-    @ApiModelProperty("内存可用空间")
-    private String memoryUsable;
+    @ApiModelProperty("1分钟平均负载")
+    private String loadavgOne;
+
+    @ApiModelProperty("5分钟负载")
+    private String loadavgFive;
+
+    @ApiModelProperty("15分钟负载")
+    private String loadavgFifteen;
 }

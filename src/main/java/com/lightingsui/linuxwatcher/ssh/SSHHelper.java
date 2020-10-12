@@ -60,27 +60,34 @@ public class SSHHelper {
      * @return 连接成功返回{@code true}, 连接失败返回{@code false}
      * @throws JSchException 连接异常信息
      */
-    public boolean getConnection() {
+    public boolean getConnection() throws JSchException {
         JSch jsch = new JSch();
-        try {
-            session = jsch.getSession(user, host, port);
-            java.util.Properties config = new java.util.Properties();
 
-            //跳过公钥的询问
-            config.put("StrictHostKeyChecking", "no");
-            session.setConfig(config);
-            session.setPassword(password);
+        session = jsch.getSession(user, host, port);
+        java.util.Properties config = new java.util.Properties();
 
-            //设置连接的超时时间
-            session.connect(10000);
-        } catch (JSchException e) {
+        //跳过公钥的询问
+        config.put("StrictHostKeyChecking", "no");
+        session.setConfig(config);
+        session.setPassword(password);
 
-            e.printStackTrace();
-            return false;
-        }
+        //设置连接的超时时间
+        session.connect(10000);
+
 
 
         return true;
+    }
+
+    public String execCommandWithConnect(String command, boolean enableEnter) {
+        try {
+            getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return execCommand(command, enableEnter);
     }
 
     /**
@@ -92,6 +99,7 @@ public class SSHHelper {
      * @throws IOException
      */
     public String execCommand(String command, boolean enableEnter) {
+
         StringBuffer res = new StringBuffer();
         try {
             openChannel = (ChannelExec) session.openChannel("exec");
@@ -378,7 +386,7 @@ public class SSHHelper {
 
         SSHHelper sshHelper = new SSHHelper("172.21.18.202", "root", "suiroot", 22);
 
-        sshHelper.getConnection();
+//        sshHelper.getConnection();
 
         /*String s = "---\n" +
                 "title: 二分查找优化\n" +

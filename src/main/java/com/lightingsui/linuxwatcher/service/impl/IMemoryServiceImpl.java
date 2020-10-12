@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -50,6 +51,8 @@ public class IMemoryServiceImpl implements IMemoryService {
 
             res.add(memoryMessageVo);
         });
+
+        Collections.sort(res);
 
 
         return CommonResult.getSuccessInstance(res);
@@ -106,6 +109,8 @@ public class IMemoryServiceImpl implements IMemoryService {
 
             res.add(memoryMessageVo);
         });
+
+        Collections.sort(res);
 
         return CommonResult.getSuccessInstance(res);
     }

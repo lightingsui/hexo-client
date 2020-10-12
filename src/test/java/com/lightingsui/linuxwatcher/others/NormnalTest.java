@@ -1,7 +1,9 @@
 package com.lightingsui.linuxwatcher.others;
 
+import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import com.jcraft.jsch.JSchException;
 import com.lightingsui.linuxwatcher.command.LinuxCommand;
 import com.lightingsui.linuxwatcher.model.ServerMessage;
 import com.lightingsui.linuxwatcher.pojo.CpuMessage;
@@ -105,7 +107,11 @@ public class NormnalTest {
         serverMessage.setPort(22);
 
         SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
-        sshHelper.getConnection();
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+        }
 
         while(true) {
             String s = sshHelper.execCommand("dstat  1 2 |tail -n +5 | cut -d\"|\" -f 3", SSHControl.ENABLE_ENTER);
@@ -132,7 +138,11 @@ public class NormnalTest {
         serverMessage.setPort(22);
 
         SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
-        sshHelper.getConnection();
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+        }
 
         String s = sshHelper.execCommand(LinuxCommand.CHECK_INSTALL_DSTAT, SSHControl.ENABLE_ENTER);
 
@@ -157,7 +167,11 @@ public class NormnalTest {
         serverMessage.setPort(22);
 
         SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
-        sshHelper.getConnection();
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+        }
 
         String memoryTotal = sshHelper.execCommand(LinuxCommand.MEMORY_MESSAGE, SSHControl.UN_ENABLE_ENTER);
         String swapTotal = sshHelper.execCommand(LinuxCommand.MEMORY_MESSAGE_SWAP, SSHControl.UN_ENABLE_ENTER);
@@ -193,7 +207,11 @@ public class NormnalTest {
         serverMessage.setPort(22);
 
         SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
-        sshHelper.getConnection();
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+        }
 
         String hardDiskUsed = sshHelper.execCommand(LinuxCommand.HARD_DISK_USED, SSHControl.ENABLE_ENTER);
         String hardDiskTotal = sshHelper.execCommand(LinuxCommand.HARD_DISK_TOTAL_UPGRADE, SSHControl.ENABLE_ENTER);
@@ -247,7 +265,11 @@ public class NormnalTest {
         serverMessage.setPort(22);
 
         SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
-        sshHelper.getConnection();
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+        }
         String s = sshHelper.execCommand(LinuxCommand.PROCESS, SSHControl.UN_ENABLE_ENTER);
 
         System.out.println(s);
@@ -264,7 +286,11 @@ public class NormnalTest {
         serverMessage.setPort(22);
 
         SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
-        sshHelper.getConnection();
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+        }
         String s = sshHelper.execCommand(LinuxCommand.CPU_MESSAGE, SSHControl.UN_ENABLE_ENTER);
 
         Matcher matcher = Pattern.compile("\\d+[.]\\d+").matcher(s);
@@ -290,6 +316,88 @@ public class NormnalTest {
 
 
         System.out.println();
+    }
+
+
+    @Test
+    public void test13() {
+        ServerMessage serverMessage = new ServerMessage();
+        serverMessage.setHost("172.21.18.202");
+        serverMessage.setPassword("suiroot");
+        serverMessage.setPort(22);
+
+        SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+        }
+        String s = sshHelper.execCommand(LinuxCommand.CPU_MESSAGE, SSHControl.UN_ENABLE_ENTER);
+
+        String commandResult = sshHelper.execCommand(LinuxCommand.LOADAVG, SSHControl.UN_ENABLE_ENTER);
+
+
+        String[] commands = commandResult.split(" ");
+
+
+
+
+    }
+
+    @Test
+    public void test14() {
+        ServerMessage serverMessage = new ServerMessage();
+        serverMessage.setHost("172.21.18.202");
+        serverMessage.setPassword("suiroot");
+        serverMessage.setPort(22);
+
+        SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+            
+        }
+        String commandResult = sshHelper.execCommand("cat /proc/uptime | cut -d\" \" -f1", SSHControl.UN_ENABLE_ENTER);
+
+        int round = Math.round(Float.parseFloat(commandResult));
+        DateTime dateTime = DateUtil.offsetSecond(DateUtil.date(), -round);
+        String intervalTime = DateUtil.formatBetween(dateTime, DateUtil.date(), BetweenFormater.Level.SECOND);
+
+
+
+
+        System.out.println(intervalTime);
+    }
+
+    @Test
+    public void test15() {
+        ServerMessage serverMessage = new ServerMessage();
+        serverMessage.setHost("172.21.18.202");
+        serverMessage.setPassword("suiroot");
+        serverMessage.setPort(22);
+
+        SSHHelper sshHelper = new SSHHelper(serverMessage.getHost(), serverMessage.getPassword());
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+
+        }
+
+        String cd = "cd /opt/blog &&";
+
+        String commandResult = sshHelper.execCommand(cd + LinuxCommand.HEXO_CHECK, SSHControl.UN_ENABLE_ENTER);
+
+        if(commandResult.contains("-bash: hexo: command not found") || commandResult.contains("Usage: hexo <command>Commands:  help     Get help on a command.")) {
+            System.out.println(false);
+        } else {
+            System.out.println(true);
+        }
+
+//        System.out.println(commandResult);
+
+
     }
 
 }

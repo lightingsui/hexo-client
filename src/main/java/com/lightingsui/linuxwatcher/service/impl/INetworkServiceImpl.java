@@ -2,6 +2,7 @@ package com.lightingsui.linuxwatcher.service.impl;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import com.jcraft.jsch.JSchException;
 import com.lightingsui.linuxwatcher.command.LinuxCommand;
 import com.lightingsui.linuxwatcher.common.CommonResult;
 import com.lightingsui.linuxwatcher.common.ErrorResponseCode;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -46,18 +48,21 @@ public class INetworkServiceImpl implements INetworkService {
         }
 
         SSHHelper sshHelper = new SSHHelper(connect.getHost(), connect.getPassword(), connect.getPort());
-        sshHelper.getConnection();
+        try {
+            sshHelper.getConnection();
+        } catch (JSchException e) {
+            e.printStackTrace();
+            return CommonResult.getErrorInstance(ErrorResponseCode.SERVICE_CONNECT_FAILED);
+        }
 
         String commandResult = sshHelper.execCommand(LinuxCommand.CHECK_INSTALL_DSTAT, false);
-        if(StringUtils.isBlank(commandResult)) {
-            return CommonResult.getErrorInstance(ErrorResponseCode.UNKNOWN_EXCEPTION);
+
+        sshHelper.disConnect();
+        if(StringUtils.isBlank(commandResult) || commandResult.contains(NOT_INSTALL_DSTAT)) {
+            return CommonResult.getSuccessInstance(false);
         }
 
-        if(commandResult.contains(NOT_INSTALL_DSTAT)) {
-            return CommonResult.getErrorInstance(ErrorResponseCode.NOT_INSTALL_DSTAT);
-        } else {
-            return CommonResult.getSuccessInstance(true);
-        }
+        return CommonResult.getSuccessInstance(true);
     }
 
     @Override
@@ -96,6 +101,8 @@ public class INetworkServiceImpl implements INetworkService {
 
             res.add(netwrokMessageVo);
         });
+
+        Collections.sort(res);
 
 
         return CommonResult.getSuccessInstance(res);
@@ -136,6 +143,8 @@ public class INetworkServiceImpl implements INetworkService {
 
             res.add(netwrokMessageVo);
         });
+
+        Collections.sort(res);
 
         return CommonResult.getSuccessInstance(res);
     }

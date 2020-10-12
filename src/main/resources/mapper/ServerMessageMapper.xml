@@ -78,7 +78,7 @@
       #{serverHexoAddress,jdbcType=VARCHAR}, #{serverOperatingSystem,jdbcType=VARCHAR}
       )
   </insert>
-    <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.ServerMessage">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="serverId" parameterType="com.lightingsui.linuxwatcher.pojo.ServerMessage">
         insert into server_message
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="serverId != null">
@@ -215,4 +215,8 @@
     <select id="selectServerIdByHost" resultType="int">
         select server_id from server_message where server_ip = #{host}
     </select>
+    <select id="selectUserHexoLocaltion" resultType="string">
+        select server_hexo_address from server_message where server_ip = #{host}
+    </select>
+
 </mapper>

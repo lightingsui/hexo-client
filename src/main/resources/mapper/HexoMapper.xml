@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lightingsui.linuxwatcher.mapper.HexoMapper">
+    <resultMap id="BaseResultMap" type="com.lightingsui.linuxwatcher.pojo.Hexo">
+        <id column="hexo_id" jdbcType="INTEGER" property="hexoId"/>
+        <result column="server_id" jdbcType="INTEGER" property="serverId"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.lightingsui.linuxwatcher.pojo.Hexo">
+        <result column="hexo_template" jdbcType="LONGVARCHAR" property="hexoTemplate"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    hexo_id, server_id
+  </sql>
+    <sql id="Blob_Column_List">
+    hexo_template
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from hexo
+        where hexo_id = #{hexoId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from hexo
+    where hexo_id = #{hexoId,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.lightingsui.linuxwatcher.pojo.Hexo">
+    insert into hexo (hexo_id, server_id, hexo_template
+      )
+    values (#{hexoId,jdbcType=INTEGER}, #{serverId,jdbcType=INTEGER}, #{hexoTemplate,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.lightingsui.linuxwatcher.pojo.Hexo">
+        insert into hexo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="hexoId != null">
+                hexo_id,
+            </if>
+            <if test="serverId != null">
+                server_id,
+            </if>
+            <if test="hexoTemplate != null">
+                hexo_template,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="hexoId != null">
+                #{hexoId,jdbcType=INTEGER},
+            </if>
+            <if test="serverId != null">
+                #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="hexoTemplate != null">
+                #{hexoTemplate,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.lightingsui.linuxwatcher.pojo.Hexo">
+        update hexo
+        <set>
+            <if test="serverId != null">
+                server_id = #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="hexoTemplate != null">
+                hexo_template = #{hexoTemplate,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where hexo_id = #{hexoId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.lightingsui.linuxwatcher.pojo.Hexo">
+    update hexo
+    set server_id = #{serverId,jdbcType=INTEGER},
+      hexo_template = #{hexoTemplate,jdbcType=LONGVARCHAR}
+    where hexo_id = #{hexoId,jdbcType=INTEGER}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.lightingsui.linuxwatcher.pojo.Hexo">
+    update hexo
+    set server_id = #{serverId,jdbcType=INTEGER}
+    where hexo_id = #{hexoId,jdbcType=INTEGER}
+  </update>
+    <update id="updateByServerId">
+    update hexo set hexo_template = #{param2} where server_id = #{param1}
+  </update>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from hexo
+    </select>
+    <sql id="Select_Cond_Sql">
+        <trim prefix="where" suffixOverrides="and">
+            <if test="hexoId != null">
+                and hexo_id = #{hexoId, jdbcType=INTEGER}
+            </if>
+            <if test="serverId != null">
+                and server_id = #{serverId, jdbcType=INTEGER}
+            </if>
+            <if test="hexoTemplate != null">
+                and hexo_template = #{hexoTemplate, jdbcType=LONGVARCHAR}
+            </if>
+        </trim>
+    </sql>
+    <select id="selectCount" parameterType="com.lightingsui.linuxwatcher.pojo.Hexo" resultMap="BaseResultMap">
+        select count(hexo_id) from hexo
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectByCond" parameterType="com.lightingsui.linuxwatcher.pojo.Hexo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from hexo
+        <include refid="Select_Cond_Sql"/>
+    </select>
+    <select id="selectUserTemplate" resultType="string">
+    select hexo_template from hexo h, server_message s where h.server_id = s.server_id and server_ip = #{host}
+  </select>
+</mapper>
